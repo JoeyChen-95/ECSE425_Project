@@ -59,18 +59,12 @@ elsif clock'event and clock='1' then
             	current_state <= IDLE;
             end if;
         when Read_Command =>
-	    -- check block index first
-	    
-
         when Write_Command =>
-	    
-
         when Replace =>
-	    if s_addr(30)='1' then 
+	    if s_addr(5)='1' then 
 		current_state <= Write_Back;
-	    else
+	    elsif s_addr(5)='0' then 
 		current_state <= Load_MemoryToCache;
-	    end if;
         when Write_Back =>
 	    current_state <= Load_MemoryToCache;
         when Load_MemoryToCache =>
