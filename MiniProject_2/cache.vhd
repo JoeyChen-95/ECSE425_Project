@@ -121,6 +121,8 @@ architecture arch of cache is
                 	m_addr <= -1;
                     memory_counter <=0;
                     m_write <='0';
+					--make the data clean
+					current_access_set(38)<='0';
                     current_state <= Load_Memory_To_Cache;
                 end if;
                     
@@ -138,6 +140,12 @@ architecture arch of cache is
                 	m_addr <= -1;
                     memory_counter <=0;
                     m_read <='0';
+
+					--set the valid bit and dirty bit and tag;
+					current_access_set(39)<='1';
+					current_access_set(38)<='0';
+					current_access_set(37 downto 32) <= req_tag;
+
                     --change the state
                     if (s_read = '1' AND s_write = '1') then --cannot read and write simultanously
                   		current_state <= IDLE;
