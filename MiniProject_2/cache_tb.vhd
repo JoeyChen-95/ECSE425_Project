@@ -116,6 +116,71 @@ test_process : process
 begin
 
 -- put your tests here
+
+--we have 16 conditions
+--1. read, valid, clean, tagEqual
+--2. read, valid, clean, !tagEqual
+--3. read, valid, !clean, tagEqual
+--4. read, valid, !clean, !tagEqual
+--5. read, !valid, clean, tagEqual
+--6. read, !valid, clean, !tagEqual
+--7. read, !valid, !clean, tagEqual
+--8. read, !valid, !clean, !tagEqual
+--9. !read, valid, clean, tagEqual
+--10. !read, valid, clean, !tagEqual
+--11. !read, valid, !clean, tagEqual
+--12. !read, valid, !clean, !tagEqual
+--13. !read, !valid, clean, tagEqual
+--14. !read, !valid, clean, !tagEqual
+--15. !read, !valid, !clean, tagEqual
+--16. !read, !valid, !clean, !tagEqual
+
+wait for clk_period;
+reset<='1';
+wait for clk_period;
+
+-- initialization
+--14. write, !valid, clean, !tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_writedata <= X"11";
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+
+s_addr <= X"00001121";--at 0 word and 10002=18block,tag 001000
+s_writedata <= X"12";;
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+
+-- 1. read, valid, clean, tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_write <= '0';
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert readdata = x"11" report "write unsuccessful" severity error;
+
+-- 9. write, valid, clean, tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_writedata <= X"13";
+s_read <= '0';
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+
+-- 3. read, valid, !clean, tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_write <= '0';
+s_read <= '1';
+assert readdata = x"13" report "write unsuccessful" severity error;
+
+-- 10. write, valid, clean, !tagEqual
+s_addr <= X"00001311";--at 0 word and 10001=17block,tag 001001
+s_writedata <= X"14";
+s_read <= '0';
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+
+
+
+
 	
 end process;
 	
