@@ -1,4 +1,3 @@
-// Code your design here
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -110,8 +109,8 @@ architecture arch of cache is
                 end if;
          	when Write_Back =>
                 
-                --memory address = cache tag * block_num + block_offset 
-                m_addr <=to_integer(unsigned(current_access_set(37 downto 32))) * block_num + req_block_offset;
+                --memory address = (cache tag * block_num + block_offset)*4*4 + word_offset*4
+                m_addr <= (to_integer(unsigned(current_access_set(37 downto 32))) * block_num + req_block_offset)*4*4 + req_word_offset*4+memory_counter;
                 m_write <='1';
             	m_writedata <=current_access_set(((memory_counter+1)*8-1) downto memory_counter*8);
             	
@@ -127,35 +126,35 @@ architecture arch of cache is
                     
           	when Load_Memory_To_Cache =>
             
-				--memory address = req_tag * block_num + block_offset 
-				m_addr <=to_integer(unsigned(req_tag)) * block_num + req_block_offset;
-				m_read <='1';
-				current_access_set(((memory_counter+1)*8-1) downto memory_counter*8) <= m_readdata;
-
-				--need 4 cycles to read the data from memory
-				if memory_counter<3 then
-					memory_counter <=memory_counter+1;
-				else
-					m_addr <= -1;
-					memory_counter <=0;
-					m_read <='0';
-					--change the state
-					if (s_read = '1' AND s_write = '1') then --cannot read and write simultanously
-						current_state <= IDLE;
-					elsif s_read = '1' then
-						current_state <= Read_From_Cache;
-					elsif s_write = '1' then
-						current_state <= Write_To_Cache;
-					else
-						current_state <= IDLE;
-					end if;
-				end if;
+            	--memory address = (req_tag * block_num + block_offset)*4*4+word_offset*4 
+            	m_addr <= (to_integer(unsigned(req_tag)) * block_num + req_block_offset)*4*4 + req_word_offset*4+memory_counter;
+                m_read <='1';
+                current_access_set(((memory_counter+1)*8-1) downto memory_counter*8) <= m_readdata;
+              
+                --need 4 cycles to read the data from memory
+                if memory_counter<3 then
+                    memory_counter <=memory_counter+1;
+                else
+                	m_addr <= -1;
+                    memory_counter <=0;
+                    m_read <='0';
+                    --change the state
+                    if (s_read = '1' AND s_write = '1') then --cannot read and write simultanously
+                  		current_state <= IDLE;
+              		elsif s_read = '1' then
+                  		current_state <= Read_From_Cache;
+              		elsif s_write = '1' then
+                  		current_state <= Write_To_Cache;
+              		else
+                  		current_state <= IDLE;
+              		end if;
+                end if;
             		
           	when Read_From_Cache =>
             	s_readdata <= current_access_set(31 downto 0);
             	current_state <= IDLE;
           	when Write_To_Cache =>
-            	current_access_set(31 downto 0) <= s_writedata;
+            	 current_access_set(31 downto 0) <= s_writedata;
             	current_state <= IDLE;
       	end case;
 
