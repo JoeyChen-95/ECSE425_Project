@@ -64,6 +64,7 @@ architecture arch of cache is
 			cache_storage(i)<= (others => '0');
 		END LOOP;
 	end if;
+		
     -- When reset
 
   	if reset'event and reset='1' then
@@ -97,10 +98,10 @@ architecture arch of cache is
                 	current_state <= Replace;
                 end if;
           	when Write_Command =>
-            --write hit and the data is clean 
-            	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag AND current_access_set(38)='0') then
+            --write hit 
+            	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag) then
                 	current_state <= Write_To_Cache;
-            --write miss or the data is dirty
+            --write miss
                 else
                 	current_state <= Replace;
                 end if;
@@ -167,7 +168,8 @@ architecture arch of cache is
             	s_readdata <= current_access_set(31 downto 0);
             	current_state <= IDLE;
           	when Write_To_Cache =>
-            	 current_access_set(31 downto 0) <= s_writedata;
+            	current_access_set(31 downto 0) <= s_writedata;
+				current_access_set(38) <= '1';
             	current_state <= IDLE;
       	end case;
 
