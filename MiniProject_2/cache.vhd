@@ -33,7 +33,7 @@ end cache;
 -- add Finite State Machine here
 architecture arch of cache is
 
-  	TYPE CACHE_STORAGE IS ARRAY(word_size-1 downto 0) OF STD_LOGIC_VECTOR(39 DOWNTO 0);
+  	TYPE CACHE_DATA_STORAGE IS ARRAY(word_size-1 downto 0) OF STD_LOGIC_VECTOR(39 DOWNTO 0);
     -- 39 bit: Valid bit
     -- 38 bit: dirty bit
     -- 37-32 bits: tag bits (6 bits)
@@ -42,7 +42,7 @@ architecture arch of cache is
   	type state_type is(IDLE, Read_Command, Write_Command, Replace, Write_Back, Load_Memory_To_Cache, Read_From_Cache, Write_To_Cache);
 
   	signal current_state: state_type;
-    signal cache_storage: CACHE_STORAGE;
+    signal cache_storage: CACHE_DATA_STORAGE;
     signal req_block_offset: integer range 0 to 31; --32 blocks
     signal req_tag: std_logic_vector(5 downto 0); --6-bit tag
     signal req_word_offset: integer range 0 to 3; --4 words per block
@@ -56,7 +56,7 @@ architecture arch of cache is
     -- Initialization 
     IF(now < 1 ps)THEN
 		For i in 0 to word_size-1 LOOP
-			cache_storage(i)<='0';
+			cache_storage(i)<= (others => '0');
 		END LOOP;
 	end if;
     -- When reset
@@ -118,7 +118,7 @@ architecture arch of cache is
                 if memory_counter<3 then
                     memory_counter <=memory_counter+1;
                 else
-                	m_addr <= -1;
+                	m_addr <= 0;
                     memory_counter <=0;
                     m_write <='0';
 					--make the data clean
@@ -137,7 +137,7 @@ architecture arch of cache is
                 if memory_counter<3 then
                     memory_counter <=memory_counter+1;
                 else
-                	m_addr <= -1;
+                	m_addr <= 0;
                     memory_counter <=0;
                     m_read <='0';
 
