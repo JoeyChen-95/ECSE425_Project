@@ -6,7 +6,7 @@ entity cache_tb is
 end cache_tb;
 
 architecture behavior of cache_tb is
-
+-------Cache Component-------
 component cache is
 generic(
     ram_size : INTEGER := 32768;
@@ -31,7 +31,7 @@ port(
     m_waitrequest : in std_logic
 );
 end component;
-
+-------Memory Component-------
 component memory is 
 GENERIC(
     ram_size : INTEGER := 32768;
@@ -49,7 +49,7 @@ PORT (
 );
 end component;
 	
--- test signals 
+---------Test Signal---------
 signal reset : std_logic := '0';
 signal clk : std_logic := '0';
 constant clk_period : time := 1 ns;
@@ -73,6 +73,7 @@ begin
 -- Connect the components which we instantiated above to their
 -- respective signals.
 dut: cache 
+---------Port Map of Cache---------
 port map(
     clock => clk,
     reset => reset,
@@ -91,7 +92,7 @@ port map(
     m_writedata => m_writedata,
     m_waitrequest => m_waitrequest
 );
-
+---------Port Map of Memory---------
 MEM : memory
 port map (
     clock => clk,
@@ -103,7 +104,7 @@ port map (
     waitrequest => m_waitrequest
 );
 				
-
+---------Clock Setup---------
 clk_process : process
 begin
   clk <= '0';
@@ -117,7 +118,7 @@ begin
 
 -- put your tests here
 
---we have 16 conditions
+--We have 16 conditions
 --1. read, valid, clean, tagEqual
 --2. read, valid, clean, !tagEqual
 --3. read, valid, !clean, tagEqual
@@ -147,7 +148,7 @@ s_write <= '1';
 wait until rising_edge(s_waitrequest);
 
 s_addr <= X"00001121";--at 0 word and 10002=18block,tag 001000
-s_writedata <= X"12";;
+s_writedata <= X"12";
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
 
@@ -221,7 +222,7 @@ s_read <= '1';
 wait until rising_edge(s_waitrequest);
 assert readdata = x"15" report "write unsuccessful case 11 or read unsuccessful case 3" severity error;
 
--- rest cases (5,6,7,8,13,15,16) are impossible. 
+-- The rest cases (5,6,7,8,13,15,16) are impossible. 
 
 
 	
