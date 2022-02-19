@@ -8,6 +8,8 @@ generic(
     cache_size : INTEGER := 4096;
     word_size : INTEGER := 128; -- 4096/32=128, we can store 128 words in our cache
     block_num : INTEGER := 32;
+    cache_delay : time := 10 ns;
+	clock_period : time := 1 ns
 );
 port(
 	clock : in std_logic;
@@ -49,6 +51,9 @@ architecture arch of cache is
     signal req_byte_offset:integer range 0 to 3; --4 bytes per word (But we don't use this variable in this project)
     signal current_access_set: std_logic_vector(39 downto 0);
     signal memory_counter : integer range 0 to 3;
+    
+    SIGNAL write_waitreq_reg: STD_LOGIC := '1';
+	SIGNAL read_waitreq_reg: STD_LOGIC := '1';
 
   	begin
   	combine: process(clock,reset)
@@ -169,5 +174,24 @@ architecture arch of cache is
   	-- make circuits here
   end if;
   end process;
+	--The waitrequest signal is used to vary response time in simulation
+	--Read and write should never happen at the same time.
+    
+	waitreq_w_proc: PROCESS (s_read)
+	BEGIN
+		IF(s_read'event AND s_read = '1')THEN
+			write_waitreq_reg <= '0' after cache_delay, '1' after cache_delay + clock_period;
+
+		END IF;
+	END PROCESS;
+
+	waitreq_r_proc: PROCESS (s_write)
+	BEGIN
+		IF(s_write'event AND s_write = '1')THEN
+			read_waitreq_reg <= '0' after cache_delay, '1' after cache_delay + clock_period;
+		END IF;
+	END PROCESS;
+	s_waitrequest <= write_waitreq_reg and read_waitreq_reg;
+
 
 end arch;
