@@ -143,12 +143,12 @@ wait for clk_period;
 -- initialization
 --14. write, !valid, clean, !tagEqual
 s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
-s_writedata <= X"11";
+s_writedata <= X"00000011";
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
 
 s_addr <= X"00001121";--at 0 word and 10002=18block,tag 001000
-s_writedata <= X"12";
+s_writedata <= X"00000012";
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
 
@@ -157,11 +157,11 @@ s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
 s_write <= '0';
 s_read <= '1';
 wait until rising_edge(s_waitrequest);
-assert readdata = x"11" report "write unsuccessful case 14 or read unsuccessful case 1" severity error;
+assert m_readdata = x"11" report "write unsuccessful case 14 or read unsuccessful case 1" severity error;
 
 -- 9. write, valid, clean, tagEqual
 s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
-s_writedata <= X"13";
+s_writedata <= X"00000013";
 s_read <= '0';
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
@@ -170,18 +170,18 @@ wait until rising_edge(s_waitrequest);
 s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
 s_write <= '0';
 s_read <= '1';
-assert readdata = x"13" report "write unsuccessful case 9 or read unsuccessful case 3" severity error;
+assert m_readdata = x"00000013" report "write unsuccessful case 9 or read unsuccessful case 3" severity error;
 
 -- 10. write, valid, clean, !tagEqual
 s_addr <= X"00001311";--at 0 word and 10001=17block,tag 001001
-s_writedata <= X"14";
+s_writedata <= X"00000014";
 s_read <= '0';
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
 
 -- 12. write, valid, !clean, !tagEqual
 s_addr <= X"00001411";--at 0 word and 10001=17block,tag 001010
-s_writedata <= X"15";
+s_writedata <= X"00000015";
 s_read <= '0';
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
@@ -191,26 +191,26 @@ s_addr <= X"00001311";--at 0 word and 10001=17block,tag 001001
 s_write <= '0';
 s_read <= '1';
 wait until rising_edge(s_waitrequest);
-assert readdata = x"14" report "write unsuccessful case 10 or read unsuccessful case 4" severity error;
+assert m_readdata = x"00000014" report "write unsuccessful case 10 or read unsuccessful case 4" severity error;
 
 --2. read, valid, clean, !tagEqual
 s_addr <= X"00001411";--at 0 word and 10001=17block,tag 001010
 s_write <= '0';
 s_read <= '1';
 wait until rising_edge(s_waitrequest);
-assert readdata = x"15" report "write unsuccessful case 12 or read unsuccessful case 2" severity error;
+assert m_readdata = x"15" report "write unsuccessful case 12 or read unsuccessful case 2" severity error;
 
 --Case 11
 -- write, valid, clean, tagEqual
 s_addr <= X"00001411";--at 0 word and 10001=17block,tag 001010
-s_writedata <= X"16";
+s_writedata <= X"00000016";
 s_read <= '0';
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
 
 -- 11. write, valid, !clean, tagEqual
 s_addr <= X"00001411";--at 0 word and 10001=17block,tag 001010
-s_writedata <= X"17";
+s_writedata <= X"00000017";
 s_read <= '0';
 s_write <= '1';
 wait until rising_edge(s_waitrequest);
@@ -220,7 +220,7 @@ s_addr <= X"00001411";--at 0 word and 10001=17block,tag 001010
 s_write <= '0';
 s_read <= '1';
 wait until rising_edge(s_waitrequest);
-assert readdata = x"15" report "write unsuccessful case 11 or read unsuccessful case 3" severity error;
+assert m_readdata = x"00000015" report "write unsuccessful case 11 or read unsuccessful case 3" severity error;
 
 -- The rest cases (5,6,7,8,13,15,16) are impossible. 
 
