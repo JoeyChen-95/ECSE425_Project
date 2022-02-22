@@ -8,7 +8,7 @@ generic(
     cache_size : INTEGER := 4096;
     word_size : INTEGER := 128; -- 4096/32=128, we can store 128 words in our cache
     block_num : INTEGER := 32;
-    cache_delay : time := 10 ns;
+    cache_delay : time := 20 ns;
 	clock_period : time := 1 ns
 );
 port(
@@ -50,7 +50,7 @@ architecture arch of cache is
     signal req_word_offset: integer range 0 to 3; --4 words per block
     signal req_byte_offset:integer range 0 to 3; --4 bytes per word (But we don't use this variable in this project)
     signal current_access_set: std_logic_vector(39 downto 0);
-    signal memory_counter : integer range 0 to 3;
+    signal memory_counter : integer range 0 to 5;
     
     SIGNAL write_waitreq_reg: STD_LOGIC := '1';
 	SIGNAL read_waitreq_reg: STD_LOGIC := '1';
@@ -60,6 +60,9 @@ architecture arch of cache is
   	begin
     -- Initialization 
     IF(now < 1 ps)THEN
+    m_read <= '0';
+	m_write <= '0';
+    s_waitrequest <= '1';
 		For i in 0 to word_size-1 LOOP
 			cache_storage(i)<= (others => '0');
 		END LOOP;
@@ -78,7 +81,12 @@ architecture arch of cache is
             	req_word_offset <= to_integer(unsigned(s_addr(3 downto 2)));
                 req_block_offset <= to_integer(unsigned(s_addr(8 downto 4)));
                 req_tag <= s_addr(14 downto 9);
+                report to_string(current_access_set) severity note;
                 current_access_set <= cache_storage(4*req_block_offset+req_word_offset);
+                report to_string(current_access_set) severity note;
+                s_waitrequest <= '1';
+                report to_string(s_read) severity note;
+                report to_string(s_write) severity note;
                 
               	if (s_read = '1' AND s_write = '1') then --cannot read and write simultanously
                   	current_state <= IDLE;
@@ -89,7 +97,11 @@ architecture arch of cache is
               	else
                   	current_state <= IDLE;
               	end if;
+                report to_string(s_read) severity note;
+                report to_string(s_write) severity note;
+                report to_string(current_state) severity note;
           	when Read_Command =>
+            report to_string(current_access_set) severity note;
             -- read hit
             	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag) then
                 	current_state <= Read_From_Cache;
@@ -98,7 +110,9 @@ architecture arch of cache is
                 	current_state <= Replace;
                 end if;
           	when Write_Command =>
+            report to_string(current_access_set) severity note;
             --write hit 
+            
             	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag) then
                 	current_state <= Write_To_Cache;
             --write miss
@@ -137,23 +151,32 @@ architecture arch of cache is
             	--memory address = (req_tag * block_num + block_offset)*4*4+word_offset*4 
             	m_addr <= (to_integer(unsigned(req_tag)) * block_num + req_block_offset)*4*4 + req_word_offset*4+memory_counter;
                 m_read <='1';
-                current_access_set(((memory_counter+1)*8-1) downto memory_counter*8) <= m_readdata;
               
                 --need 4 cycles to read the data from memory
-                if memory_counter<3 then
+                if memory_counter>1 and memory_counter<4 then
+
+                	current_access_set(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;
                     memory_counter <=memory_counter+1;
-                else
+                elsif memory_counter=4 then 
+
+					current_access_set(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;
+                    
+                    m_addr <= 0;
+                    memory_counter <= memory_counter+1;
+                    m_read <='0';
+                elsif memory_counter=5 then
                 	m_addr <= 0;
-                    memory_counter <=0;
                     m_read <='0';
 
-					--set the valid bit and dirty bit and tag;
+					current_access_set(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;
+                	--set the valid bit and dirty bit and tag;
 					current_access_set(39)<='1';
 					current_access_set(38)<='0';
 					current_access_set(37 downto 32) <= req_tag;
 
                     --change the state
-                    if (s_read = '1' AND s_write = '1') then --cannot read and write simultanously
+                    if (s_read = '1' AND s_write = '1') then 
+                    	--cannot read and write simultanously
                   		current_state <= IDLE;
               		elsif s_read = '1' then
                   		current_state <= Read_From_Cache;
@@ -162,38 +185,51 @@ architecture arch of cache is
               		else
                   		current_state <= IDLE;
               		end if;
+                    memory_counter <=0;
+                else 
+                  	memory_counter <=memory_counter+1;
                 end if;
             		
           	when Read_From_Cache =>
-            	s_readdata <= current_access_set(31 downto 0);
+            	cache_storage(4*req_block_offset+req_word_offset)<=current_access_set;
+            	s_readdata <= cache_storage(4*req_block_offset+req_word_offset)(31 downto 0);
+--                 s_read <= '0';
+                s_waitrequest <= '0';
             	current_state <= IDLE;
           	when Write_To_Cache =>
-            	current_access_set(31 downto 0) <= s_writedata;
 				current_access_set(38) <= '1';
+                cache_storage(4*req_block_offset+req_word_offset)<=current_access_set;
+            	cache_storage(4*req_block_offset+req_word_offset)(31 downto 0) <= s_writedata;
+--                 s_write <= '0';
+				s_waitrequest <= '0';
             	current_state <= IDLE;
       	end case;
 
   	-- make circuits here
   end if;
   end process;
+  
+  
+  
+  
 	--The waitrequest signal is used to vary response time in simulation
 	--Read and write should never happen at the same time.
     
-	waitreq_w_proc: PROCESS (s_read)
-	BEGIN
-		IF(s_read'event AND s_read = '1')THEN
-			write_waitreq_reg <= '0' after cache_delay, '1' after cache_delay + clock_period;
+-- 	waitreq_w_proc: PROCESS (s_read)
+-- 	BEGIN
+-- 		IF(s_read'event AND s_read = '1')THEN
+-- 			write_waitreq_reg <= '0' after cache_delay, '1' after cache_delay + clock_period;
 
-		END IF;
-	END PROCESS;
+-- 		END IF;
+-- 	END PROCESS;
 
-	waitreq_r_proc: PROCESS (s_write)
-	BEGIN
-		IF(s_write'event AND s_write = '1')THEN
-			read_waitreq_reg <= '0' after cache_delay, '1' after cache_delay + clock_period;
-		END IF;
-	END PROCESS;
-	s_waitrequest <= write_waitreq_reg and read_waitreq_reg;
+-- 	waitreq_r_proc: PROCESS (s_write)
+-- 	BEGIN
+-- 		IF(s_write'event AND s_write = '1')THEN
+-- 			read_waitreq_reg <= '0' after cache_delay, '1' after cache_delay + clock_period;
+-- 		END IF;
+-- 	END PROCESS;
+-- 	s_waitrequest <= write_waitreq_reg and read_waitreq_reg;
 
 
 end arch;
