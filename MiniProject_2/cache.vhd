@@ -41,7 +41,7 @@ architecture arch of cache is
     -- 37-32 bits: tag bits (6 bits)
     -- 31-0 bits: data bits(One word, 32 bits) 
 
-  	type state_type is(IDLE, Read_Command, Write_Command, Replace, Write_Back, Load_Memory_To_Cache, Read_From_Cache, Write_To_Cache);
+  	type state_type is(IDLE, Read_Command, Write_Command, Replace, Write_Back, Load_Memory_To_Cache, Read_From_Cache, Write_To_Cache,Buffer_State);
 
   	signal current_state: state_type;
     signal cache_storage: CACHE_DATA_STORAGE;
@@ -93,6 +93,9 @@ architecture arch of cache is
               	else
                   	current_state <= IDLE;
               	end if;
+                
+                report to_string(s_read) severity note;
+                report to_string(s_write) severity note;
 
           	when Read_Command =>
              report to_string(current_state) severity note;
@@ -191,7 +194,8 @@ architecture arch of cache is
                 report to_string(s_readdata) severity note;
 --                 s_read <= '0';
                 s_waitrequest <= '0';
-            	current_state <= IDLE;
+            	current_state <= Buffer_State;
+                
           	when Write_To_Cache =>
 				current_access_set(38) <= '1';
                 current_access_set(31 downto 0) <=s_writedata;
@@ -200,7 +204,10 @@ architecture arch of cache is
             	cache_storage(4*req_block_offset+req_word_offset)(31 downto 0) <= s_writedata;
 --                 s_write <= '0';
 				s_waitrequest <= '0';
-            	current_state <= IDLE;
+            	current_state <= Buffer_State;
+            when Buffer_State =>
+            	s_waitrequest <= '1';
+                current_state <= IDLE;
       	end case;
 
   	-- make circuits here
