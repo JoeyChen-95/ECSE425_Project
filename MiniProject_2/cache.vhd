@@ -77,17 +77,13 @@ architecture arch of cache is
   	elsif clock'event and clock='1' then
       	case current_state is
           	when IDLE =>
-            -- Decode the s_addr(address of the cache we want to access)
+            	s_waitrequest <= '1';
+            	-- Decode the s_addr(address of the cache we want to access)
             	req_word_offset <= to_integer(unsigned(s_addr(3 downto 2)));
                 req_block_offset <= to_integer(unsigned(s_addr(8 downto 4)));
                 req_tag <= s_addr(14 downto 9);
-                report to_string(current_access_set) severity note;
                 current_access_set <= cache_storage(4*req_block_offset+req_word_offset);
-                report to_string(current_access_set) severity note;
-                s_waitrequest <= '1';
-                report to_string(s_read) severity note;
-                report to_string(s_write) severity note;
-                
+                                 
               	if (s_read = '1' AND s_write = '1') then --cannot read and write simultanously
                   	current_state <= IDLE;
               	elsif s_read = '1' then
@@ -97,11 +93,9 @@ architecture arch of cache is
               	else
                   	current_state <= IDLE;
               	end if;
-                report to_string(s_read) severity note;
-                report to_string(s_write) severity note;
-                report to_string(current_state) severity note;
+
           	when Read_Command =>
-            report to_string(current_access_set) severity note;
+             report to_string(current_state) severity note;
             -- read hit
             	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag) then
                 	current_state <= Read_From_Cache;
@@ -109,10 +103,10 @@ architecture arch of cache is
                 else
                 	current_state <= Replace;
                 end if;
+                
           	when Write_Command =>
-            report to_string(current_access_set) severity note;
+            report to_string(current_state) severity note;
             --write hit 
-            
             	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag) then
                 	current_state <= Write_To_Cache;
             --write miss
@@ -193,12 +187,16 @@ architecture arch of cache is
           	when Read_From_Cache =>
             	cache_storage(4*req_block_offset+req_word_offset)<=current_access_set;
             	s_readdata <= cache_storage(4*req_block_offset+req_word_offset)(31 downto 0);
+                report to_string(cache_storage(4*req_block_offset+req_word_offset)(31 downto 0))  severity note;
+                report to_string(s_readdata) severity note;
 --                 s_read <= '0';
                 s_waitrequest <= '0';
             	current_state <= IDLE;
           	when Write_To_Cache =>
 				current_access_set(38) <= '1';
+                current_access_set(31 downto 0) <=s_writedata;
                 cache_storage(4*req_block_offset+req_word_offset)<=current_access_set;
+                cache_storage(4*req_block_offset+req_word_offset)(38) <= '1';
             	cache_storage(4*req_block_offset+req_word_offset)(31 downto 0) <= s_writedata;
 --                 s_write <= '0';
 				s_waitrequest <= '0';
