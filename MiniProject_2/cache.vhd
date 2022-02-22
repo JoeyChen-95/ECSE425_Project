@@ -124,25 +124,25 @@ architecture arch of cache is
 
          when Write_Back =>
 		--memory address = (req_tag * block_num + block_offset)*4*4+word_offset*4 
-            	m_addr <= (to_integer(unsigned(req_tag)) * block_num + req_block_offset)*4*4 + (req_word_offset+mem_word_counter)*4+memory_counter;
+            	m_addr <= (to_integer(unsigned(cache_storage(4*req_block_offset+mem_word_counter)(37 downto 32))) * block_num + req_block_offset)*4*4 + (mem_word_counter)*4+memory_counter;
                 m_write <='1';
                          	  
 		if mem_word_counter>=0 and mem_word_counter<4 then 
 			--need 4 cycles to read the data from memory
-	                if memory_counter>1 and memory_counter<4 then
-	                	m_writedata <= cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8);
+	                if memory_counter>0 and memory_counter<3 then
+	                	m_writedata <= cache_storage(4*req_block_offset+mem_word_counter)(((memory_counter-1+1)*8-1) downto (memory_counter-1)*8);
 	                	memory_counter <=memory_counter+1;
-	                elsif memory_counter=4 then 
-				m_writedata <= cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8);                  
+	                elsif memory_counter=3 then 
+				m_writedata <= cache_storage(4*req_block_offset+mem_word_counter)(((memory_counter-1+1)*8-1) downto (memory_counter-1)*8);                  
 	                    	m_addr <= 0;
 	                    	memory_counter <= memory_counter+1;
 	                    	m_write <='0';
-	                elsif memory_counter=5 then
+	                elsif memory_counter=4 then
 	                	m_addr <= 0;
 	                    	m_write <='0';
-				m_writedata <= cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8);
+				m_writedata <= cache_storage(4*req_block_offset+mem_word_counter)(((memory_counter-1+1)*8-1) downto (memory_counter-1)*8);
 	                	--set the valid bit and dirty bit and tag;
-				cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(38)<='0';
+				cache_storage(4*req_block_offset+mem_word_counter)(38)<='0';
 				memory_counter <=0;
 				mem_word_counter := mem_word_counter+1;
                 	else 
@@ -158,27 +158,27 @@ architecture arch of cache is
          when Load_Memory_To_Cache =>
             
             	--memory address = (req_tag * block_num + block_offset)*4*4+word_offset*4 
-            	m_addr <= (to_integer(unsigned(req_tag)) * block_num + req_block_offset)*4*4 + (req_word_offset+mem_word_counter)*4+memory_counter;
+            	m_addr <= (to_integer(unsigned(req_tag)) * block_num + req_block_offset)*4*4 + (mem_word_counter)*4+memory_counter;
                 m_read <='1';
                          	  
 		if mem_word_counter>=0 and mem_word_counter<4 then 
 			--need 4 cycles to read the data from memory
 	                if memory_counter>1 and memory_counter<4 then
-	                	cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;
+	                	cache_storage(4*req_block_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;
 	                	memory_counter <=memory_counter+1;
 	                elsif memory_counter=4 then 
-				cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;                  
+				cache_storage(4*req_block_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;                  
 	                    	m_addr <= 0;
 	                    	memory_counter <= memory_counter+1;
 	                    	m_read <='0';
 	                elsif memory_counter=5 then
 	                	m_addr <= 0;
 	                    	m_read <='0';
-				cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;
+				cache_storage(4*req_block_offset+mem_word_counter)(((memory_counter-2+1)*8-1) downto (memory_counter-2)*8) <= m_readdata;
 	                	--set the valid bit and dirty bit and tag;
-				cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(39)<='1';
-				cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(38)<='0';
-				cache_storage(4*req_block_offset+req_word_offset+mem_word_counter)(37 downto 32) <= req_tag;
+				cache_storage(4*req_block_offset+mem_word_counter)(39)<='1';
+				cache_storage(4*req_block_offset+mem_word_counter)(38)<='0';
+				cache_storage(4*req_block_offset+mem_word_counter)(37 downto 32) <= req_tag;
 	                    	
 				memory_counter <=0;
 				mem_word_counter := mem_word_counter+1;
