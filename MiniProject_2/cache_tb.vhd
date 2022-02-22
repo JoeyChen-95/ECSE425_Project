@@ -146,190 +146,203 @@ wait for clk_period;
 reset<='0';
 wait for clk_period;
 
-	s_addr <= X"00001111"; -- block 10001, tag 001000, word + byte : 0001
-    s_writedata <= X"00000001";
-    s_write<= '1';
-    wait until rising_edge(s_waitrequest);
-    s_write <= '0';
+-- simple block replacement test 
+-- 	s_addr <= X"00001111"; -- block 10001, tag 001000, word + byte : 0001
+--     s_writedata <= X"00000001";
+--     s_write<= '1';
+--     wait until rising_edge(s_waitrequest);
+--     s_write <= '0';
+
+-- wait for clk_period;
+
+--     s_addr <= X"00001111";
+--     s_read <= '1';
+--     wait until rising_edge(s_waitrequest);
+--     s_read <= '0';
+    
+-- wait for clk_period;
+    
+-- 	s_addr <= X"00001315"; -- block 10001, tag 001001, word+ byte : 0101
+--     s_read <='1';
+--     wait until rising_edge(s_waitrequest);
+--     s_read <= '0';
+    
+-- wait for clk_period;
+    
+--     s_addr <= X"00001311"; -- block 10001, tag 001001, word+ byte : 0001
+--     s_read <='1';
+--     wait until rising_edge(s_waitrequest);
+--     s_read <= '0';
+
+
+
+--5. read, !valid, clean, tagEqual
+s_addr <= X"00000051";--at 0 word and 00101=5block,tag 000000
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"53525150" report "read unsuccessful case 5" severity error;
+s_read<='0';
 
 wait for clk_period;
 
-    s_addr <= X"00001111";
-    s_read <= '1';
-    wait until rising_edge(s_waitrequest);
-    s_read <= '0';
-    
+--13. write, !valid, clean, tagEqual
+s_addr <= X"00000061";--at 0 word and 00110=6block,tag 000000
+s_writedata <= X"00000010";
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+s_write <= '0';
+
 wait for clk_period;
-    
-	s_addr <= X"00001315"; -- block 10001, tag 001001, word+ byte : 0101
-    s_read <='1';
-    wait until rising_edge(s_waitrequest);
-    s_read <= '0';
-    
+
+--3. read, valid, !clean, tagEqual
+s_addr <= X"00000061";--at 0 word and 00110=6block,tag 000000
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"00000010" report "write unsuccessful case 4 or read unsuccessful case 3" severity error;
+s_read <= '0';
+
 wait for clk_period;
-    
-    s_addr <= X"00001311"; -- block 10001, tag 001001, word+ byte : 0001
-    s_read <='1';
-    wait until rising_edge(s_waitrequest);
-    s_read <= '0';
+
+-- 6. read, !valid, clean, !tagEqual
+s_addr <= X"00002091";--at 0 word and 01001=9block,tag 010000
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"93929190" report "read unsuccessful case 6" severity error;
+s_read<='0';
+
+wait for clk_period;
+
+-- 1. read, valid, clean, tagEqual
+s_addr <= X"00002091";--at 0 word and 01001=9block,tag 010000
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"93929190" report "read unsuccessful case 1" severity error;
+s_read<='0';
+
+wait for clk_period;
+
+--2. read, valid, clean, !tagEqual
+s_addr <= X"00002891";--at 0 word and 01001=9block,tag 010100
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"93929190" report "read unsuccessful case 2" severity error;
+s_read <= '0';
+
+wait for clk_period;
+
+-- 14. write, !valid, clean, !tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_writedata <= X"00000011";
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+s_write <= '0';
+
+wait for clk_period;
+
+-- 3. read, valid, !clean, tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_write <= '0';
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"00000011" report "write unsuccessful case 14" severity error;
+s_read <= '0';
+
+wait for clk_period;
+
+-- 9. write, valid, !clean, tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_writedata <= X"00000013";
+s_read <= '0';
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+s_write <= '0';
+
+wait for clk_period;
+
+-- 3. read, valid, !clean, tagEqual
+s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
+s_write <= '0';
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"00000013" report "write unsuccessful case 9" severity error;
+s_read <= '0';
+
+wait for clk_period;
+
+-- 4. read, valid, !clean, !tagEqual
+s_addr <= X"00001311";--at 0 word and 10001=17block,tag 001001
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"13121110" report "write unsuccessful case 9 or read unsuccessful case 4" severity error;
+s_read <='0';
+
+wait for clk_period;
+
+-- 10. write, valid, clean, !tagEqual
+s_addr <= X"00001711";--at 0 word and 10001=17block,tag 001011
+s_writedata <= X"00000014";
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+s_write <= '0';
+
+wait for clk_period;
+
+--3. read, valid, !clean, tagEqual
+s_addr <= X"00001711";--at 0 word and 10001=17block,tag 001010
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"00000014" report "write unsuccessful case 10" severity error;
+s_read <= '0';
+
+wait for clk_period;
+
+--11. write, valid, !clean, tagEqual
+s_addr <= X"00001715";--at 0 word and 10001=17block,tag 001011, word 1
+s_writedata <= X"00000015";
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+s_write <= '0';
+
+wait for clk_period;
+
+--3. read, valid, !clean, tagEqual
+s_addr <= X"00001715";--at 0 word and 10001=17block,tag 001010
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"00000015" report "write unsuccessful case 10" severity error;
+s_read <= '0';
+
+wait for clk_period;
+
+-- 12. write, valid, !clean, !tagEqual
+s_addr <= X"00001511";--at 0 word and 10001=17block,tag 001010
+s_writedata <= X"00000016";
+s_write <= '1';
+wait until rising_edge(s_waitrequest);
+s_write <= '0';
+
+wait for clk_period;
+
+--3. read, valid, !clean, tagEqual
+s_addr <= X"00001511";--at 0 word and 10001=17block,tag 001010
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"00000016" report "write unsuccessful case 10" severity error;
+s_read <= '0';
+
+wait for clk_period;
+
+--3. read, valid, !clean, tagEqual
+s_addr <= X"00001515";--at 0 word and 10001=17block,tag 001010, word 1
+s_read <= '1';
+wait until rising_edge(s_waitrequest);
+assert s_readdata = x"17161514" report "write unsuccessful case 10" severity error;
+s_read <= '0';
+
+wait for clk_period;
 
 
-
-
--- --5. read, !valid, clean, tagEqual
--- s_addr <= X"00000051";--at 0 word and 00101=5block,tag 000000
--- s_read <= '1';
--- wait until rising_edge(s_waitrequest);
--- -- assert s_readdata = x"11111111" report "read unsuccessful case 5" severity error;
--- s_read<='0';
-
-
--- --13. write, !valid, clean, tagEqual
--- s_addr <= X"00000061";--at 0 word and 00110=6block,tag 000000
--- s_writedata <= X"00000010";
--- s_write <= '1';
--- wait until rising_edge(s_waitrequest);
--- s_write <= '0';
-
--- -- -- mem at tag 0, block 6
--- -- FOR n IN 0 TO 3 LOOP
--- --   m_addr <= 0*block_num*4*4+6*4*4+n;
--- --   m_read <= '1';
--- --   wait until rising_edge(m_waitrequest);
--- --   m_read <= '0';
--- --   check_current_memory((n*8-1) downto n*8) <= m_readdata;
--- -- END LOOP;
--- -- m_write <='0';
--- -- m_read <= '0';
--- -- assert check_current_memory = x"11111111" report "write unsuccessful case 9" severity error;
-
-
--- -- 6. read, !valid, clean, !tagEqual
--- s_addr <= X"00002091";--at 0 word and 01001=9block,tag 010000
--- s_read <= '1';
--- wait until rising_edge(s_waitrequest);
--- assert s_readdata = x"11111111" report "read unsuccessful case 6" severity error;
--- s_read<='0';
-
-
--- -- 1. read, valid, clean, tagEqual
--- s_addr <= X"00002091";--at 0 word and 01001=9block,tag 010000
--- s_read <= '1';
--- wait until rising_edge(s_waitrequest);
--- -- assert s_readdata = x"11111111" report "read unsuccessful case 1" severity error;
--- s_read<='0';
-
--- --2. read, valid, clean, !tagEqual
--- s_addr <= X"00002891";--at 0 word and 01001=9block,tag 010100
--- s_read <= '1';
--- wait until rising_edge(s_waitrequest);
--- -- assert s_readdata = x"11111111" report "read unsuccessful case 2" severity error;
--- s_read <= '0';
-
-
--- -- 14. write, !valid, clean, !tagEqual
--- s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
--- s_writedata <= X"00000011";
--- s_write <= '1';
--- wait until rising_edge(s_waitrequest);
--- s_write <= '0';
-
-
--- -- 3. read, valid, !clean, tagEqual
--- s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
--- s_write <= '0';
--- s_read <= '1';
--- wait until rising_edge(s_waitrequest);
--- assert s_readdata = x"00000011" report "write unsuccessful case 14 or read unsuccessful case 1" severity error;
--- s_read <= '0';
-
--- -- 9. write, valid, !clean, tagEqual
--- s_addr <= X"00001111";--at 0 word and 10001=17block,tag 001000
--- s_writedata <= X"00000013";
--- s_read <= '0';
--- s_write <= '1';
--- wait until rising_edge(s_waitrequest);
--- s_write <= '0';
-
--- -- -- at tag 8, block 17
--- -- FOR n IN 0 TO 3 LOOP
--- --   m_addr <= 8*block_num*4*4+17*4*4+n;
--- --   m_read <= '1';
--- --   wait until rising_edge(m_waitrequest);
--- --   m_read <= '0';
--- --   check_current_memory((n*8-1) downto n*8) <= m_readdata;
--- -- END LOOP;
--- -- m_write <='0';
--- -- m_read <= '0';
--- -- assert check_current_memory = x"11111111" report "write unsuccessful case 9" severity error;
-
-
--- -- 4. read, valid, !clean, !tagEqual
--- s_addr <= X"00001311";--at 0 word and 10001=17block,tag 001001
--- s_read <= '1';
--- wait until rising_edge(s_waitrequest);
--- -- assert s_readdata = x"11111111" report "write unsuccessful case 9 or read unsuccessful case 4" severity error;
--- s_read <='0';
-
--- -- -- check original replaced data at memory, at tag 8, block 17
--- -- FOR n IN 0 TO 3 LOOP
--- --   m_addr <= 8*block_num*4*4+17*4*4+n;
--- --   m_read <= '1';
--- --   wait until rising_edge(m_waitrequest);
--- --   m_read <= '0';
--- --   check_current_memory((n*8-1) downto n*8) <= m_readdata;
--- -- END LOOP;
--- -- m_write <='0';
--- -- m_read <= '0';
--- -- assert check_current_memory = x"00000013" report "read unsuccessful case 4" severity error;
-
--- -- 10. write, valid, clean, !tagEqual
--- s_addr <= X"00001711";--at 0 word and 10001=17block,tag 001011
--- s_writedata <= X"00000014";
--- s_write <= '1';
--- wait until rising_edge(s_waitrequest);
--- s_write <= '0';
-
--- -- 12. write, valid, !clean, !tagEqual
--- s_addr <= X"00001411";--at 0 word and 10001=17block,tag 001010
--- s_writedata <= X"00000015";
--- s_write <= '1';
--- wait until rising_edge(s_waitrequest);
--- s_write <= '0';
-
--- -- -- check original replaced data at memory, at tag 001011=11, block 17
--- -- FOR n IN 0 TO 3 LOOP
--- --   m_addr <= 11*block_num*4*4+17*4*4+n;
--- --   m_read <= '1';
--- --   wait until rising_edge(m_waitrequest);
--- --   m_read <= '0';
--- --   check_current_memory((n*8-1) downto n*8) <= m_readdata;
--- -- END LOOP;
--- -- m_write <='0';
--- -- m_read <= '0';
--- -- assert check_current_memory = x"00000014" report "write unsuccessful case 12" severity error;
-
-
--- -- 11. write, valid, !clean, tagEqual
--- s_addr <= X"00001411";--at 0 word and 10001=17block,tag 001010
--- s_writedata <= X"00000016";
--- s_write <= '1';
--- wait until rising_edge(s_waitrequest);
--- s_write <= '0';
-
--- -- -- check original replaced data at memory, at tag 001010=10, block 17
--- -- FOR n IN 0 TO 3 LOOP
--- --   m_addr <= 10*block_num*4*4+17*4*4+n;
--- --   m_read <= '1';
--- --   wait until rising_edge(m_waitrequest);
--- --   m_read <= '0';
--- --   check_current_memory((n*8-1) downto n*8) <= m_readdata;
--- -- END LOOP;
--- -- m_write <='0';
--- -- m_read <= '0';
--- -- assert check_current_memory = x"00000014" report "write unsuccessful case 11" severity error;
-
--- --The rest cases (5,7,8,13,15,16) are impossible. 
+--The rest cases (5,7,8,13,15,16) are impossible. 
 
 	
 end process;
