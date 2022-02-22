@@ -93,20 +93,18 @@ architecture arch of cache is
                   	current_state <= IDLE;
               	end if;
               
-          when Read_Command =>
-             	report to_string(current_state) severity note;
+          when Read_Command =>   
            	 -- read hit
-            	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag) then
+            	if(cache_storage(4*req_block_offset+req_word_offset)(39)='1' AND cache_storage(4*req_block_offset+req_word_offset)(37 downto 32)=req_tag) then
                 	current_state <= Read_From_Cache;
             	-- read miss
                 else
                 	current_state <= Replace;
                 end if;
                 
-          when Write_Command =>
-            	report to_string(current_state) severity note;
+          when Write_Command =>            	                                     
             	--write hit 
-            	if(current_access_set(39)='1' AND current_access_set(37 downto 32)=req_tag) then
+            	if(cache_storage(4*req_block_offset+req_word_offset)(39)='1' AND cache_storage(4*req_block_offset+req_word_offset)(37 downto 32)=req_tag) then
                 	current_state <= Write_To_Cache;
             	--write miss
                 else
@@ -115,7 +113,7 @@ architecture arch of cache is
 
           when Replace =>
             	--the replace word is clean
-                if current_access_set(38)='0' then
+                if cache_storage(4*req_block_offset+req_word_offset)(38)='0' then
                 	current_state <= Load_Memory_To_Cache;
                 else
                 --the replace word is ditry
@@ -207,7 +205,11 @@ architecture arch of cache is
             	current_state <= Buffer_State;
                 
           when Write_To_Cache =>
-                cache_storage(4*req_block_offset+req_word_offset)(38) <= '1';
+		--update the dirty bit of the block
+                cache_storage(4*req_block_offset)(38) <= '1';
+		cache_storage(4*req_block_offset+1)(38) <= '1';
+		cache_storage(4*req_block_offset+2)(38) <= '1';
+		cache_storage(4*req_block_offset+3)(38) <= '1';	
             	cache_storage(4*req_block_offset+req_word_offset)(31 downto 0) <= s_writedata;
 		s_waitrequest <= '0';
             	current_state <= Buffer_State;
