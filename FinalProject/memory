@@ -1,0 +1,20 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.memory_arbiter_lib.all;
+
+entity MEMORY is
+  port(
+  -- input 
+  
+  -- output 
+  
+   );
+end entity;
+
+  architecture behavior of MEMORY is
+
+begin
+ 
+
+  end behavior;
