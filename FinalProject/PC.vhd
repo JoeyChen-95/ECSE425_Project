@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity PC is
   port (
     pc_clk    : in std_logic;
-	 pc_enable : in std_logic;
+    pc_enable : in std_logic;
     pc_reset  : in std_logic;
     pc_in     : in std_logic_vector(31 downto 0);
     pc_out    : out std_logic_vector(31 downto 0)
