@@ -53,7 +53,6 @@ BEGIN
 	BEGIN
 		IF(memwrite'event AND memwrite = '1')THEN
 			write_waitreq_reg <= '0' after mem_delay, '1' after mem_delay + clock_period;
-
 		END IF;
 	END PROCESS;
 
@@ -64,6 +63,5 @@ BEGIN
 		END IF;
 	END PROCESS;
 	waitrequest <= write_waitreq_reg and read_waitreq_reg;
-
 
 END rtl;

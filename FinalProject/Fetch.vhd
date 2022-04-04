@@ -4,13 +4,13 @@ use ieee.numeric_std.all;
 
 entity fetch is
 	port (
-		fetch_clk 		: in std_logic;
-		fetch_enable 	: in std_logic;
-		fetch_reset 	: in std_logic;
-		branch_predict : in std_logic;
+		fetch_clk		: in std_logic;
+		fetch_enable	: in std_logic;
+		fetch_reset		: in std_logic;
+		branch_predict	: in std_logic;
 		branch_pc		: in std_logic_vector (31 downto 0);
-		pc_out 			: out std_logic_vector (31 downto 0);
-      ins_out			: out std_logic_vector (31 downto 0)
+		pc_out			: out std_logic_vector (31 downto 0);
+		ins_out			: out std_logic_vector (31 downto 0)
 	 );
 end entity;
 
@@ -36,19 +36,19 @@ begin
 		waitrequest => im_wait_req
 	);
 	
-   program_counter : entity work.PC
-   port map (
+	program_counter : entity work.PC
+	port map (
 		pc_clk    => fetch_clk,
 		pc_enable => fetch_enable,
 		pc_reset  => fetch_reset,
 		pc_in     => pc_in,
 		pc_out    => internal_pc_out
-   );
+	);
 
 	-- Use the prediction bit to get current pc value
-   with branch_predict select pc_in <= 
-        branch_pc when '1',
-        std_logic_vector(unsigned(internal_pc_out) + 4) when others;
+	with branch_predict select pc_in <= 
+		branch_pc when '1',
+		std_logic_vector(unsigned(internal_pc_out) + 4) when others;
 	
 	-- Inputs for the instruction memory
 	im_addr 	<= to_integer(unsigned(internal_pc_out));
