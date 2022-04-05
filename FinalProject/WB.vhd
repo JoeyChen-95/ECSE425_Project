@@ -9,13 +9,13 @@ entity WB is
   n_reset: in std_logic; --reset
   --Input
   mem_WB_enable : in std_logic;
-  mem_WB_address: in std_logic_vector (31 downto 0);
+  mem_WB_address: in std_logic_vector (31 downto 0); -- This 31 should be modified to reg_adrsize
   mem_WB_data: in std_logic_vector (31 downto 0);
   
   --Output
   WB_enable_out: out std_logic;
-  WB_address_out: out std_logic_vector (31 downto 0);
-  WB_data_out: out std_logic_vector (31 downto 0);
+  WB_address_out: out std_logic_vector (31 downto 0); -- This 31 should be modified to reg_adrsize
+  WB_data_out: out std_logic_vector (31 downto 0); 
   WB_forwarding_data: out std_logic_vector (31 downto 0);
   );
 end entity;
