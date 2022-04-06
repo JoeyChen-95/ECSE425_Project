@@ -6,14 +6,14 @@ entity ALU is
   port (
   	-- clock, reset, stall
     ALU_clock: in std_logic;
-    ALU_reset: in std_logic;
-    ALU_stall: in std_logic;
+--     ALU_reset: in std_logic;
+--     ALU_stall: in std_logic;
     
     -- Rs,Rt,operand, output result
     ALU_RS: in std_logic_vector(31 downto 0);
     ALU_RT_or_immediate: in std_logic_vector(31 downto 0); -- Rt or the immediate value
     ALU_operand_code: in std_logic_vector(5 downto 0);
-    ALU_result_out: out std_logic_vector(31 downto 0) ;
+    ALU_result_out: out std_logic_vector(31 downto 0) 
   );
 
 end entity ALU;
@@ -27,7 +27,7 @@ architecture ALU_architecture of ALU is
 
   begin 
 
-   process(ALU_RS,ALU_RT,ALU_operand_code) 
+   process(ALU_RS,ALU_RT_or_immediate,ALU_operand_code) 
 
     begin  
 
@@ -47,9 +47,9 @@ architecture ALU_architecture of ALU is
 
        	when "000011" => --mul
           -- Rd = Rs * Rt
-          high <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32)) (63 downto 32);
-          low <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32)) (31 downto 0);
-          ALU_result_out <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32));
+--           high <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32)) (64 downto 32);
+--           low <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32)) (31 downto 0);
+--           ALU_result_out <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32));
           
         when "000100" => --div
         -- Rd = Rs / Rt
@@ -115,18 +115,18 @@ architecture ALU_architecture of ALU is
         
         when "010001" =>  --sll
           -- shift left by Rt bits, so load 31 - Rt bits of Rs and add Rt bits of 0
-          ALU_result_out <= ALU_RS((31-to_integer(unsigned(ALU_RT_or_immediate))) downto 0) & std_logic_vector(0,to_integer(unsigned(ALU_RT_or_immediate)));
+          ALU_result_out <= ALU_RS((31-to_integer(unsigned(ALU_RT_or_immediate))) downto 0) & std_logic_vector(to_unsigned(0,to_integer(unsigned(ALU_RT_or_immediate))));
 
         when "010010" =>  --srl
           -- shift right by Rt bits, so Rt bits 0, and add 31 - Rt bits of Rs
-          ALU_result_out <= std_logic_vector(0,to_integer(unsigned(ALU_RT_or_immediate))) & ALU_RS( 31 downto (31-to_integer(unsigned(ALU_RT_or_immediate))));
+          ALU_result_out <= std_logic_vector(to_unsigned(0,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto (31-to_integer(unsigned(ALU_RT_or_immediate))));
         
         when "010011" =>  --sra
           -- if the most significant bit of Rs is 1, add 1, otherwise add by zero, and with 31 - Rt bits of Rs
           if ALU_RS(31) = '0' then
-          	ALU_result_out <= std_logic_vector(0,to_integer(unsigned(ALU_RT_or_immediate))) & ALU_RS( 31 downto (31-to_integer(unsigned(ALU_RT_or_immediate))));
+          	ALU_result_out <= std_logic_vector(to_unsigned(0,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto (to_integer(unsigned(ALU_RT_or_immediate))));
           else 
-            ALU_result_out <= std_logic_vector(1,to_integer(unsigned(ALU_RT_or_immediate))) & ALU_RS( 31 downto (31-to_integer(unsigned(ALU_RT_or_immediate))));
+            ALU_result_out <= std_logic_vector(to_unsigned(1,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto to_integer(unsigned(ALU_RT_or_immediate)));
           end if;
           
         when "010100" =>  --lw
