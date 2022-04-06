@@ -24,6 +24,7 @@ architecture ALU_architecture of ALU is
   -- high and low part for mul and div instruction
   signal high: std_logic_vector(31 downto 0);
   signal low: std_logic_vector(31 downto 0);
+  signal long: std_logic_vector(63 downto 0);
 
   begin 
 
@@ -47,9 +48,10 @@ architecture ALU_architecture of ALU is
 
        	when "000011" => --mul
           -- Rd = Rs * Rt
---           high <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32)) (64 downto 32);
---           low <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32)) (31 downto 0);
---           ALU_result_out <= std_logic_vector(to_unsigned(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32));
+          long <= std_logic_vector(to_signed(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 64));
+          high <= long (63 downto 32);
+          low <= long(31 downto 0);
+          ALU_result_out <= std_logic_vector(to_signed(to_integer (unsigned(ALU_RS)) * to_integer (unsigned(ALU_RT_or_immediate)), 32));
           
         when "000100" => --div
         -- Rd = Rs / Rt

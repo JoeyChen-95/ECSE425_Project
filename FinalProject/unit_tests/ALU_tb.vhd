@@ -76,21 +76,39 @@ begin
     wait for clk_period;
     report to_string(ALU_result_out) severity note;    
     
-      -- test mul
---   	wait for clk_period;
---     ALU_RS <= x"00000003";
---     ALU_RT_or_immediate <= x"00000004";
---     ALU_operand_code <= "000011";
---     wait for clk_period;
---     report to_string(ALU_result_out) severity note;   
+    -- test mul
+  	wait for clk_period;
+    ALU_RS <= x"00000123"; --291
+    ALU_RT_or_immediate <= x"00000234"; --564
+    ALU_operand_code <= "000011";
+    wait for clk_period;
+    -- should be 164124, 101000000100011100
+    report to_string(ALU_result_out) severity note;   
     
     -- test div
   	wait for clk_period;
-    ALU_RS <= x"0000000c";
-    ALU_RT_or_immediate <= x"00000004";
+    ALU_RS <= x"0002811c";--164124
+    ALU_RT_or_immediate <= x"00000123"; --291
     ALU_operand_code <= "000100";
     wait for clk_period;
-    report to_string(ALU_result_out) severity note;     
+    -- should be 564, 1000110100
+    report to_string(ALU_result_out) severity note;
+    
+    -- test slt
+  	wait for clk_period;
+    ALU_RS <= x"00000001";
+    ALU_RT_or_immediate <= x"00001111";
+    ALU_operand_code <= "000010";
+    wait for clk_period;
+    report to_string(ALU_result_out) severity note; 
+    
+    -- test slt
+  	wait for clk_period;
+    ALU_RS <= x"00000001";
+    ALU_RT_or_immediate <= x"00001111";
+    ALU_operand_code <= "000010";
+    wait for clk_period;
+    report to_string(ALU_result_out) severity note; 
     
 
   end process;
