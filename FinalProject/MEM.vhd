@@ -31,8 +31,6 @@ entity MEM is
   access_memory_write: in std_logic; -- connect register out
   
   access_memory_load: in std_logic; -- connect storeen out
-  
-  byte: in std_logic; -- reset n signal
 
   access_reg_address_add_in: in std_logic_vector(reg_adrsize-1 downto 0); -- connect with ex)dest_regadd_out 
   
@@ -53,24 +51,29 @@ architecture behavior of MEM is
 signal temp_address:std_logic_vector (31 downto 0);
 signal temp_select_data:std_logic_vector (31 downto 0);
 signal temp_data:std_logic_vector (31 downto 0);
+signal memory_waitrequest: std_logic;
 
 begin
   memorydata: entity work.Data_Memory --? what is this; and can below value change?
   PORT MAP (
-  byte=>byte,
-  clk=>clk,
-  n_rst=>reset,
-  port_out=>temp_data,
-  write_enable=>access_memory_write,
-  write_in=>temp_select_data,
-  write_adr=>temp_address(31 downto 0),
-  port_adr=>temp_address(31 downto 0)
+  clock=>clk,
+  writedata=>temp_select_data,
+  address=>temp_address,
+  memwrite=>access_memory_write,
+  memread=>?,
+  readdata=>?,
+  waitrequest=>std_logic;
+  
+--   port_out=>temp_data,
+--   write_enable=>access_memory_write,
+--   write_in=>temp_select_data,
+--   write_adr=>temp_address(31 downto 0),
+--   port_adr=>temp_address(31 downto 0)
   );
 
 process(clk,reset)
-  
 begin
-  if(rising_edge(clk)) then --?
+  if(rising_edge(clk)) then
   access_reg_out<=access_reg_address_in;  
   access_reg_add_out<=access_reg_address_add_in;
   	if(access_memory_load='1') then
