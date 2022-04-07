@@ -52,7 +52,7 @@ begin
   test_process : process
   begin
 	
-    -- test add
+    -- test add 2ns
   	wait for clk_period;
     ALU_RS <= x"00000001";
     ALU_RT_or_immediate <= x"00000002";
@@ -60,7 +60,7 @@ begin
     wait for clk_period;
     report to_string(ALU_result_out) severity note;
     
-    -- test sub
+    -- test sub 4ns
   	wait for clk_period;
     ALU_RS <= x"00000003";
     ALU_RT_or_immediate <= x"00000002";
@@ -68,7 +68,7 @@ begin
     wait for clk_period;
     report to_string(ALU_result_out) severity note;
     
-    -- test addi
+    -- test addi 6ns
   	wait for clk_period;
     ALU_RS <= x"00000001";
     ALU_RT_or_immediate <= x"00001111";
@@ -76,7 +76,7 @@ begin
     wait for clk_period;
     report to_string(ALU_result_out) severity note;    
     
-    -- test mul
+    -- test mul 8ns
   	wait for clk_period;
     ALU_RS <= x"00000123"; --291
     ALU_RT_or_immediate <= x"00000234"; --564
@@ -85,7 +85,7 @@ begin
     -- should be 164124, 101000000100011100
     report to_string(ALU_result_out) severity note;   
     
-    -- test div
+    -- test div 10ns
   	wait for clk_period;
     ALU_RS <= x"0002811c";--164124
     ALU_RT_or_immediate <= x"00000123"; --291
@@ -94,21 +94,230 @@ begin
     -- should be 564, 1000110100
     report to_string(ALU_result_out) severity note;
     
-    -- test slt
+    -- test slt 1 Rs < Rt 12ns
   	wait for clk_period;
     ALU_RS <= x"00000001";
     ALU_RT_or_immediate <= x"00001111";
-    ALU_operand_code <= "000010";
+    ALU_operand_code <= "000101";
     wait for clk_period;
+    --expect 1
     report to_string(ALU_result_out) severity note; 
     
-    -- test slt
+    -- test slt 1 Rs > Rt 14ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "000101";
+    wait for clk_period;
+    -- expect 0
+    report to_string(ALU_result_out) severity note; 
+    
+    -- test slti 1 Rs < Rt 16ns
   	wait for clk_period;
     ALU_RS <= x"00000001";
     ALU_RT_or_immediate <= x"00001111";
-    ALU_operand_code <= "000010";
+    ALU_operand_code <= "000110";
     wait for clk_period;
+    --expect 1
     report to_string(ALU_result_out) severity note; 
+    
+    -- test slti 1 Rs > Rt 18ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "000110";
+    wait for clk_period;
+    -- expect 0
+    report to_string(ALU_result_out) severity note; 
+    
+    -- test and 20ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "000111";
+    wait for clk_period;
+    -- expect 0x00000001
+    report to_string(ALU_result_out) severity note; 
+    
+    -- test or 22ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001000";
+    wait for clk_period;
+    -- expect 0x00001111
+    report to_string(ALU_result_out) severity note; 
+    
+    -- test nor, 24ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001001";
+    wait for clk_period;
+    -- expect 11111111111111111110111011101110
+    report to_string(ALU_result_out) severity note;
+    
+    -- test xor, 26ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001010";
+    wait for clk_period;
+    -- expect 0x00001110
+    report to_string(ALU_result_out) severity note;
+    
+    -- test andi 28ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001011";
+    wait for clk_period;
+    -- expect 0x00000001
+    report to_string(ALU_result_out) severity note; 
+    
+    -- test ori 30ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001100";
+    wait for clk_period;
+    -- expect 0x00001111
+    report to_string(ALU_result_out) severity note;   
+    
+    -- test xori 32ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001101";
+    wait for clk_period;
+    -- expect 0x00001110
+    report to_string(ALU_result_out) severity note;  
+    
+    -- test mfhi 34ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001110";
+    wait for clk_period;
+    -- expect ??
+    report to_string(ALU_result_out) severity note;
+
+    -- test mflo 36ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000001";
+    ALU_operand_code <= "001111";
+    wait for clk_period;
+    -- expect ??
+    report to_string(ALU_result_out) severity note;
+    
+    -- test lui 38ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00001f12";
+    ALU_operand_code <= "010000";
+    wait for clk_period;
+    -- expect 00011111000100100000000000000000
+    report to_string(ALU_result_out) severity note;    
+
+    -- test sll 40ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010001";
+    wait for clk_period;
+    -- expect 0x00008888, 00000000000000001000100010001000
+    report to_string(ALU_result_out) severity note;
+	
+    -- test srl 42ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010010";
+    wait for clk_period;
+    -- expect 0x00000222, 00000000000000000000001000100010
+    report to_string(ALU_result_out) severity note;
+
+    -- test sra, start with 0,  44ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010011";
+    wait for clk_period;
+    -- expect 0x00000222, 00000000000000000000001000100010
+    report to_string(ALU_result_out) severity note;
+    
+    -- test sra, start with 1,  46ns
+  	wait for clk_period;
+    ALU_RS <= x"90001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010011";
+    wait for clk_period;
+    -- expect 0xe0000222, 11100000000000000000001000100010 
+    report to_string(ALU_result_out) severity note;
+    
+    -- test lw, 48ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010100";
+    wait for clk_period;
+    -- expect 0x00001114,  
+    report to_string(ALU_result_out) severity note;   
+    
+    -- test sw, 50ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010101";
+    wait for clk_period;
+    -- expect 0x00001114
+    report to_string(ALU_result_out) severity note;
+    
+    -- test beq, 52ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010110";
+    wait for clk_period;
+    -- expect 0x00001114
+    report to_string(ALU_result_out) severity note;
+
+    -- test bne, 54ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "010111";
+    wait for clk_period;
+    -- expect 0x00001114
+    report to_string(ALU_result_out) severity note;
+    
+    -- test j, 56ns
+  	wait for clk_period;
+    ALU_RS <= x"00001111";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "011000";
+    wait for clk_period;
+    -- expect 0x00001111
+    report to_string(ALU_result_out) severity note;
+    
+    -- test jr, 58ns
+  	wait for clk_period;
+    ALU_RS <= x"00001112";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "011001";
+    wait for clk_period;
+    -- expect 0x00001112
+    report to_string(ALU_result_out) severity note;    
+
+    -- test jal, 60ns
+  	wait for clk_period;
+    ALU_RS <= x"00001113";
+    ALU_RT_or_immediate <= x"00000003";
+    ALU_operand_code <= "011010";
+    wait for clk_period;
+    -- expect 0x00001113
+    report to_string(ALU_result_out) severity note;
     
 
   end process;

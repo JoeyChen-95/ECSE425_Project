@@ -121,14 +121,14 @@ architecture ALU_architecture of ALU is
 
         when "010010" =>  --srl
           -- shift right by Rt bits, so Rt bits 0, and add 31 - Rt bits of Rs
-          ALU_result_out <= std_logic_vector(to_unsigned(0,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto (31-to_integer(unsigned(ALU_RT_or_immediate))));
+          ALU_result_out <= std_logic_vector(to_unsigned(0,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto (to_integer(unsigned(ALU_RT_or_immediate))));
         
         when "010011" =>  --sra
           -- if the most significant bit of Rs is 1, add 1, otherwise add by zero, and with 31 - Rt bits of Rs
           if ALU_RS(31) = '0' then
           	ALU_result_out <= std_logic_vector(to_unsigned(0,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto (to_integer(unsigned(ALU_RT_or_immediate))));
           else 
-            ALU_result_out <= std_logic_vector(to_unsigned(1,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto to_integer(unsigned(ALU_RT_or_immediate)));
+            ALU_result_out <= std_logic_vector(to_unsigned(1,to_integer(unsigned(ALU_RT_or_immediate)))) & ALU_RS( 31 downto (to_integer(unsigned(ALU_RT_or_immediate))));
           end if;
           
         when "010100" =>  --lw
