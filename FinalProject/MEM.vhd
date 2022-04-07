@@ -21,7 +21,7 @@ entity MEM is
   
   data_in_forward: in std_logic_vector (31 downto 0); -- 
   
-  data_select: in std_logic; -- Original: data_in_selected
+  forward_select: in std_logic; -- Original: data_in_selected
   
   --From EX
   in_data: in std_logic_vector (31 downto 0); -- connect ex_mem_data_out
@@ -31,8 +31,6 @@ entity MEM is
   access_memory_write: in std_logic; -- connect register out
   
   access_memory_load: in std_logic; -- connect storeen out
-  
-  byte: in std_logic; -- reset n signal
 
   access_reg_address_add_in: in std_logic_vector(reg_adrsize-1 downto 0); -- connect with ex)dest_regadd_out 
   
@@ -45,47 +43,57 @@ entity MEM is
   out_data: out std_logic_vector(31 downto 0):= (others=> 'Z');
   access_reg_out: out std_logic;
   access_reg_add_out: out std_logic_vector (reg_adrsize-1 downto 0)
+  out_waitrequest: out std_logic;
   );
 end entity;
 
 architecture behavior of MEM is
 
-signal temp_address:std_logic_vector (31 downto 0);
-signal temp_select_data:std_logic_vector (31 downto 0);
-signal temp_data:std_logic_vector (31 downto 0);
+signal memory_in_address:std_logic_vector (31 downto 0); 
+signal memory_write_data:std_logic_vector (31 downto 0); -- this is the input data of data_memory
+signal memory_out_data:std_logic_vector (31 downto 0); -- this is the output data of data_memory
+-- signal memory_waitrequest: std_logic;
+signal null_signal:std_logic;
 
 begin
   memorydata: entity work.Data_Memory --? what is this; and can below value change?
   PORT MAP (
-  byte=>byte,
-  clk=>clk,
-  n_rst=>reset,
-  port_out=>temp_data,
-  write_enable=>access_memory_write,
-  write_in=>temp_select_data,
-  write_adr=>temp_address(31 downto 0),
-  port_adr=>temp_address(31 downto 0)
+  clock=>clk,
+  writedata=>memory_write_data,
+  address=>temp_address,
+  memwrite=>access_memory_write,
+  memread=>null_signal, -- useless signal
+  readdata=>memory_out_data,
+  waitrequest=>out_waitrequest;
+  
+--   port_out=>temp_data,
+--   write_enable=>access_memory_write,
+--   write_in=>memory_write_data,
+--   write_adr=>temp_address(31 downto 0),
+--   port_adr=>temp_address(31 downto 0)
   );
 
 process(clk,reset)
-  
 begin
-  if(rising_edge(clk)) then --?
-  access_reg_out<=access_reg_address_in;  
-  access_reg_add_out<=access_reg_address_add_in;
+  if(rising_edge(clk)) then
+  access_reg_out<=access_reg_address_in; --just send to WB stage 
+  access_reg_add_out<=access_reg_address_add_in; -- just send to WB stage
   	if(access_memory_load='1') then
-  		out_data<=temp_data;
+  		out_data<=memory_write_data;
     	else
-    	outdata<=inaddress;
+    	out_data<=memory_in_address;
   	end if;
   end if;
 end process; 
 
-with data_select select temp_select_data <=
+-- decide which data to write in
+-- write 1.forwarding data or 2. normal in data
+with forward_select select memory_write_data <=
 data_in_forward when '1',
 in_data when others;
 
-temp_address<=in_address when (access_memory_load='1') 
+--decide the write in address 
+memory_in_address<=in_address when (access_memory_load='1') 
 else (OTHERS => '0');
 
 end behavior;
