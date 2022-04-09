@@ -27,6 +27,10 @@ ARCHITECTURE arch OF Registers IS
 BEGIN
 
     registers_process : PROCESS (clock, dump, reset)
+        VARIABLE register_vector : STD_LOGIC_VECTOR(31 DOWNTO 0);
+        FILE file_ptr : text;
+        VARIABLE file_line : line;
+        VARIABLE line_content : STRING(1 TO 31);
     BEGIN
         IF (rising_edge(reset)) THEN
             -- We shall reset all register content to
@@ -36,7 +40,33 @@ BEGIN
             END LOOP;
         ELSIF (rising_edge(dump)) THEN
             -- We shall dump the register content
-            -- to register.txt
+            -- to register.txt.
+            file_open(file_ptr, REGISTER_FILE_ADDRESS, READ_MODE);
+
+            FOR i IN 0 TO 31 LOOP
+                -- For each register, we must
+                -- translate its content into
+                -- a string.
+                register_vector := registers(i);
+                FOR j IN 0 TO 31 LOOP
+                    IF (register_vector = '0') THEN
+                        line_content(32 - j) := '0';
+                    ELSIF (register_vector = '1') THEN
+                        line_content(32 - j) := '1';
+                    ELSIF (register_vector = 'U') THEN
+                        line_content(32 - j) := 'U';
+                    ELSIF (register_vector = 'X') THEN
+                        line_content(32 - j) := 'X';
+                    ELSIF (register_vector = 'Z') THEN
+                        line_content(32 - j) := 'Z';
+                    END IF;
+                END LOOP;
+
+                write(file_line, line_content);
+                writeline(filr_ptr, file_line);
+            END LOOP;
+
+            file_close(file_ptr);
         ELSIF (rising_edge(clock)) THEN
             -- We shall conduct regular 
             -- register operations., i.e.,
