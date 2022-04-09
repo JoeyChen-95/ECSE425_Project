@@ -314,7 +314,7 @@ begin
     WB_enable_in <='0';
     store_enable_in <='0';
     load_enable_in <='0';
-    Rd_in <= "00111";
+    Rd_in <= "00000";
     
     -- mul 5*4
     -- choose Rs and Rt
@@ -404,7 +404,7 @@ begin
     WB_enable_in <='0';
     store_enable_in <='0';
     load_enable_in <='0';
-    Rd_in <= "00111";
+    Rd_in <= "00000";
     
     -- div
     -- choose Rs and Rt
@@ -612,14 +612,248 @@ begin
 
 --------------------------- lui -------------------------------------
 
+    wait for clk_period;
+    ex_reset <= '1';
+    wait for clk_period;
+    
+    EX_Rs_in <= x"00000007";
+    EX_Rt_in <= x"00000042";
+    EX_immediate_value <= x"00000007";
+    EX_operand_code <= "010000";
+    ex_forward_data <= x"00000011";
+    mem_forward_data <= x"00000020";
+    WB_enable_in <='0';
+    store_enable_in <='0';
+    load_enable_in <='0';
+    Rd_in <= "00111";
+    
+    -- lui
+    -- choose immediate 00000007
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '0';
+    Rt_mux_select0 <= '1';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00070000" 84ns
+    report to_string(EX_data_out) severity note;
+    wait for clk_period;
 
-
+    -- lui
+    EX_immediate_value <= x"07000019";
+    -- choose immediate 07000019
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '0';
+    Rt_mux_select0 <= '1';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00070000" 86ns
+    report to_string(EX_data_out) severity note;
 
 --------------------------- lui -------------------------------------
 
+--------------------------- sll -------------------------------------
 
+    wait for clk_period;
+    ex_reset <= '1';
+    wait for clk_period;
+    
+    EX_Rs_in <= x"00000007";
+    EX_Rt_in <= x"00000000";
+    EX_immediate_value <= x"00000007";
+    EX_operand_code <= "010001";
+    ex_forward_data <= x"00000011";
+    mem_forward_data <= x"00000020";
+    WB_enable_in <='0';
+    store_enable_in <='0';
+    load_enable_in <='0';
+    Rd_in <= "00111";
+    
+    -- sll
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00000007" 89ns
+    report to_string(EX_data_out) severity note;
+    wait for clk_period;   
+    
+    -- sll
+    EX_Rt_in <= x"00000004";
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00000038" 91ns
+    report to_string(EX_data_out) severity note;   
 
+--------------------------- sll -------------------------------------
 
+--------------------------- srl -------------------------------------
+
+    wait for clk_period;
+    ex_reset <= '1';
+    wait for clk_period;
+    
+    EX_Rs_in <= x"00000567";
+    EX_Rt_in <= x"00000000";
+    EX_immediate_value <= x"00000007";
+    EX_operand_code <= "010010";
+    ex_forward_data <= x"00000011";
+    mem_forward_data <= x"00000020";
+    WB_enable_in <='0';
+    store_enable_in <='0';
+    load_enable_in <='0';
+    Rd_in <= "00111";
+    
+    -- sll
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00000567" 94ns
+    report to_string(EX_data_out) severity note;
+    wait for clk_period;   
+    
+    -- sll
+    EX_Rt_in <= x"00000005";
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00070000" 96ns
+    report to_string(EX_data_out) severity note; 
+
+--------------------------- srl -------------------------------------
+
+--------------------------- sra -------------------------------------
+
+    wait for clk_period;
+    ex_reset <= '1';
+    wait for clk_period;
+    
+    EX_Rs_in <= x"00000567";
+    EX_Rt_in <= x"00000000";
+    EX_immediate_value <= x"00000007";
+    EX_operand_code <= "010011";
+    ex_forward_data <= x"00000011";
+    mem_forward_data <= x"00000020";
+    WB_enable_in <='0';
+    store_enable_in <='0';
+    load_enable_in <='0';
+    Rd_in <= "00111";
+    
+    -- sra starts with 0 and shift by 0 bit
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect "00000000000000000000010101100111" 99ns
+    report to_string(EX_data_out) severity note;
+    wait for clk_period;   
+    
+    -- sra starts with 0 and shift 5 bits
+    EX_Rt_in <= x"00000005";
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect "00000000000000000000000000101011" 101ns
+    report to_string(EX_data_out) severity note; 
+    wait for clk_period; 
+    
+    -- sra starts with 1 and shift 0 bits
+    EX_Rs_in <= x"f00000b5";
+    EX_Rt_in <= x"00000000";
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect "11110000000000000000000010110101" 103ns
+    report to_string(EX_data_out) severity note; 
+    wait for clk_period;     
+    
+    -- sra starts with 1 and shift 5 bits
+    EX_Rt_in <= x"00000005";
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect "11111111100000000000000000000101" 105ns
+    report to_string(EX_data_out) severity note; 
+
+--------------------------- sra -------------------------------------
+
+--------------------------- lw -------------------------------------
+    wait for clk_period;
+    ex_reset <= '1';
+    wait for clk_period;
+    
+    EX_Rs_in <= x"00000567";
+    EX_Rt_in <= x"00001002";
+    EX_immediate_value <= x"00000007";
+    EX_operand_code <= "010100";
+    ex_forward_data <= x"00000011";
+    mem_forward_data <= x"00000020";
+    WB_enable_in <='0';
+    store_enable_in <='0';
+    load_enable_in <='0';
+    Rd_in <= "00111";
+    
+    -- load word
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00001569" 108ns
+    report to_string(EX_data_out) severity note; 
+
+--------------------------- lw -------------------------------------
+
+--------------------------- sw -------------------------------------
+    wait for clk_period;
+    ex_reset <= '1';
+    wait for clk_period;
+    
+    EX_Rs_in <= x"00000567";
+    EX_Rt_in <= x"00002030";
+    EX_immediate_value <= x"00000007";
+    EX_operand_code <= "010101";
+    ex_forward_data <= x"00000011";
+    mem_forward_data <= x"00000020";
+    WB_enable_in <='0';
+    store_enable_in <='0';
+    load_enable_in <='0';
+    Rd_in <= "00111";
+    
+    -- load word
+    -- choose Rs Rt
+    Rs_mux_select0 <= '0';
+    Rs_mux_select1 <= '1';
+    Rt_mux_select0 <= '0';
+    Rt_mux_select1 <= '1';
+    wait for clk_period;
+    -- expect x"00002597" 111ns
+    report to_string(EX_data_out) severity note;
+
+--------------------------- sw -------------------------------------
 
   end process;
 

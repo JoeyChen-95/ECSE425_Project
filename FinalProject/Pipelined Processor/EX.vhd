@@ -1,6 +1,7 @@
--- Code your design here
 library IEEE;
 use IEEE.std_logic_1164.all;
+library work;
+use work.all;
 
 entity EX is
   port(
@@ -147,7 +148,37 @@ begin
 	-- When reset
   	if ex_reset'event and ex_reset='1' then
   		-- make all signal to be 0
-	
+--         ALU_RS <= (others => '0');
+--         ALU_RT_or_immediate <= (others => '0');
+--         ALU_result_out <= (others => '0');
+--         ALU_operand_code <= (others => '0');
+--         mux_4_Rs_select_0 <= '0';
+--         mux_4_Rs_select_1 <= '0';
+--         mux_4_Rs_input_0 <= (others => '0');
+--         mux_4_Rs_input_1 <= (others => '0');
+--         mux_4_Rs_input_2 <= (others => '0');
+--         mux_4_Rs_input_3 <= (others => '0');
+--         mux_4_Rs_output <= (others => '0');
+--         mux_4_Rt_select_0 <= '0';
+--         mux_4_Rt_select_1 <= '0';
+--         mux_4_Rt_input_0 <= (others => '0');
+--         mux_4_Rt_input_1 <= (others => '0');
+--         mux_4_Rt_input_2 <= (others => '0');
+--         mux_4_Rt_input_3 <= (others => '0');
+--         mux_4_Rt_output <= (others => '0');
+--         temp_EX_Rs <= (others => '0');
+--         temp_EX_Rt <= (others => '0');
+--         temp_Rs_mux_select0 <= '0';
+--         temp_Rs_mux_select1 <= '0';
+--         temp_Rt_mux_select0 <= '0';
+--         temp_Rt_mux_select1 <= '0';
+        
+--         mem_data_out <= (others => '0');
+--         WB_enable_out <= '0';
+--         load_enable_out <= '0';
+--         store_enable_out <= '0';
+--     	Rd_out<= "00000";   
+
     -- When stall
   	elsif ex_stall'event and ex_stall='1' then
   		-- add $r0, $r0, $r0
