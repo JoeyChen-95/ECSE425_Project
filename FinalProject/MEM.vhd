@@ -1,8 +1,9 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use work.memory_arbiter_lib.all;
+-- use work.memory_arbiter_lib.all;
 use ieee.numeric_std.all;
-
+library work;
+use work.all;
 -- register ports: listed below 
 -- 2 address ports and 2 outputs port
 -- 3 write ports: write in; write enable and write address
@@ -17,14 +18,14 @@ entity MEM is
   --From Controller
   clk: in std_logic;
   
-  reset: in std_logic
+  reset: in std_logic;
   
-  data_in_forward: in std_logic_vector (31 downto 0); -- 
+  data_in_forward: in std_logic_vector(31 downto 0); -- 
   
   forward_select: in std_logic; -- Original: data_in_selected
   
   --From EX
-  in_data: in std_logic_vector (31 downto 0); -- connect ex_mem_data_out
+  in_data: in std_logic_vector(31 downto 0); -- connect ex_mem_data_out
   
   in_address: in std_logic_vector(31 downto 0); -- connect ex_ALU_result_out
   
@@ -32,7 +33,7 @@ entity MEM is
   
   access_memory_load: in std_logic; -- connect storeen out
 
-  access_reg_address_add_in: in std_logic_vector(reg_adrsize-1 downto 0); -- connect with ex)dest_regadd_out 
+  access_reg_address_add_in: in std_logic_vector(4 downto 0); -- connect with ex)dest_regadd_out 
   
   access_reg_address_in: in std_logic; -- connect ex_reg_en_out
   -- eight bits
@@ -42,37 +43,31 @@ entity MEM is
   -- TO WB
   out_data: out std_logic_vector(31 downto 0):= (others=> 'Z');
   access_reg_out: out std_logic;
-  access_reg_add_out: out std_logic_vector (reg_adrsize-1 downto 0)
+  access_reg_add_out: out std_logic_vector (4 downto 0);
   out_waitrequest: out std_logic;
   );
-end entity;
+end MEM;
 
 architecture behavior of MEM is
 
-signal memory_in_address:std_logic_vector (31 downto 0); 
+signal memory_in_address: std_logic_vector(31 downto 0); 
 signal memory_write_data:std_logic_vector (31 downto 0); -- this is the input data of data_memory
 signal memory_out_data:std_logic_vector (31 downto 0); -- this is the output data of data_memory
 -- signal memory_waitrequest: std_logic;
-signal null_signal:std_logic;
+signal null_signal: std_logic;
 
 begin
-  memorydata: entity work.Data_Memory --? what is this; and can below value change?
+  memorydata: entity data_memory 
   PORT MAP (
   clock=>clk,
   writedata=>memory_write_data,
-  address=>temp_address,
+  address=>memory_in_address,
   memwrite=>access_memory_write,
   memread=>null_signal, -- useless signal
   readdata=>memory_out_data,
-  waitrequest=>out_waitrequest;
-  
---   port_out=>temp_data,
---   write_enable=>access_memory_write,
---   write_in=>memory_write_data,
---   write_adr=>temp_address(31 downto 0),
---   port_adr=>temp_address(31 downto 0)
+  waitrequest=>out_waitrequest
   );
-
+  
 process(clk,reset)
 begin
   if(rising_edge(clk)) then
@@ -81,7 +76,7 @@ begin
   	if(access_memory_load='1') then
   		out_data<=memory_write_data;
     	else
-    	out_data<=memory_in_address;
+    	out_data<=std_logic_vector(to_unsigned(0,32));
   	end if;
   end if;
 end process; 
@@ -93,7 +88,7 @@ data_in_forward when '1',
 in_data when others;
 
 --decide the write in address 
-memory_in_address<=in_address when (access_memory_load='1') 
-else (OTHERS => '0');
+memory_in_address<= in_address when (access_memory_load='1') 
+else (OTHERS =>'0');
 
 end behavior;
