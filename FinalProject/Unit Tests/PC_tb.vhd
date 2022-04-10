@@ -27,7 +27,7 @@ ARCHITECTURE PC_testbench OF PC_tb is
 begin 
 	
   PC_test: PC 
-  ---------Port Map of mux_4 ---------
+  ---------Port Map of PC ---------
   port map(
       pc_clk => clk,
       pc_enable => enable_t,
