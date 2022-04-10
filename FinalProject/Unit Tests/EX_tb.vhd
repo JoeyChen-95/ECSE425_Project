@@ -11,7 +11,6 @@ ARCHITECTURE EX_testbench OF EX_tb IS
         PORT (
             -- clock, reset, stall
             ex_clock : IN STD_LOGIC;
-            ex_reset : IN STD_LOGIC;
             ex_stall : IN STD_LOGIC;
 
             EX_Rs_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --Rs
@@ -49,7 +48,6 @@ ARCHITECTURE EX_testbench OF EX_tb IS
     -- clock, reset, stall
     SIGNAL clk : STD_LOGIC := '0';
     CONSTANT clk_period : TIME := 1 ns;
-    SIGNAL ex_reset : STD_LOGIC := '0';
     SIGNAL ex_stall : STD_LOGIC := '0';
     -- Rs, Rt, immediate, operand, and data out
     SIGNAL EX_Rs_in : STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -83,7 +81,6 @@ BEGIN
     ---------Port Map of EX ---------
     PORT MAP(
         ex_clock => clk,
-        ex_reset => ex_reset,
         ex_stall => ex_stall,
         EX_Rs_in => EX_Rs_in,
         EX_Rt_in => EX_Rt_in,
@@ -119,11 +116,8 @@ BEGIN
     BEGIN
 
         --------------------------- add -------------------------------------
-        --     wait for clk_period/2;
+
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000001";
         EX_Rt_in <= x"00000002";
@@ -141,7 +135,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000008" 3ns
+        -- expect x"00000008" 2ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose ex_forward_data and mem_forward_data
@@ -151,7 +145,7 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000009" 5ns
+        -- expect x"00000009" 4ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose ex_forward_data and Rt
@@ -161,7 +155,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect  x"00000006" 7ns
+        -- expect  x"00000006" 6ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose mem_forward_data and ex_forward_data
@@ -171,7 +165,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000009" 9ns
+        -- expect x"00000009" 8ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose mem_forward_data and mem_forward_data
@@ -181,7 +175,7 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"0000000a" 11ns
+        -- expect x"0000000a" 10ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose mem_forward_data and temp_EX_Rt
@@ -191,7 +185,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000007" 13ns
+        -- expect x"00000007" 12ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose temp_EX_Rs and ex_forward_data
@@ -201,7 +195,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000005" 15ns
+        -- expect x"00000005" 14ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose temp_EX_Rs and mem_forward_data
@@ -211,7 +205,7 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000006" 17ns
+        -- expect x"00000006" 16ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose temp_EX_Rs and temp_EX_Rt
@@ -221,7 +215,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000003" 19ns
+        -- expect x"00000003" 18ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose 0 and ex_forward_data
@@ -231,7 +225,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000004" 21ns
+        -- expect x"00000004" 20ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose 0 and mem_forward_data
@@ -241,7 +235,7 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000005" 23ns
+        -- expect x"00000005" 22ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose 0 and temp_EX_Rt
@@ -251,16 +245,13 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000002" 25ns
+        -- expect x"00000002" 24ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- add -------------------------------------
 
         --------------------------- sub -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000005";
         EX_Rt_in <= x"00000004";
@@ -278,7 +269,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000000" 28ns
+        -- expect x"00000000" 26ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose Rs and Rt
@@ -288,7 +279,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000001" 30ns
+        -- expect x"00000001" 28ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         -- choose mem_forward_data and Rt
@@ -298,16 +289,13 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect -3, x"fffffffd" 32ns
+        -- expect -3, x"fffffffd" 30ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- sub -------------------------------------
 
         --------------------------- mul -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000005";
         EX_Rt_in <= x"00000004";
@@ -327,19 +315,19 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000000" 35ns
+        -- expect x"00000000" 32ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
-        -- expect x"00000000" 37ns
+        -- expect x"00000000" 34ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00010100" 39ns
+        -- expect x"00010100" 36ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
         -- mul 5*2
@@ -350,19 +338,19 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000000" 41ns
+        -- expect x"00000000" 38ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
-        -- expect x"00000000" 43ns
+        -- expect x"00000000" 40ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00001010" 45ns
+        -- expect x"00001010" 42ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
         -- mul 161061273 * 2290649224
@@ -373,28 +361,25 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000000" 47ns
+        -- expect x"00000000" 44ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
-        -- expect "00000000010100011110101110000101" 49ns
+        -- expect "00000000010100011110101110000101" 46ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect "00010100011110101110000101001000" 51ns
+        -- expect "00010100011110101110000101001000" 48ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- mul -------------------------------------
 
         --------------------------- div -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000008";
         EX_Rt_in <= x"00000002";
@@ -414,19 +399,19 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000000" 54ns
+        -- expect x"00000000" 50ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
-        -- expect x"00000000" 56ns
+        -- expect x"00000000" 52ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00000100" 58ns
+        -- expect x"00000100" 54ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -438,27 +423,24 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000000" 60ns
+        -- expect x"00000000" 56ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
-        -- expect x"00000001" 62ns
+        -- expect x"00000001" 58ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00001000" 64ns
+        -- expect x"00001000" 60ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- div -------------------------------------
         --------------------------- slt -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000008";
         EX_Rt_in <= x"00000002";
@@ -478,7 +460,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000000" 67ns
+        -- expect x"00000000" 62ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -489,15 +471,12 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '0';
         WAIT FOR clk_period;
-        -- expect x"00000001" 69ns
+        -- expect x"00000001" 64ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- slt -------------------------------------
         --------------------------- and -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000007";
         EX_Rt_in <= x"00000002";
@@ -517,16 +496,13 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000002" 72ns
+        -- expect x"00000002" 66ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- and -------------------------------------
 
         --------------------------- or -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000007";
         EX_Rt_in <= x"00000042";
@@ -546,7 +522,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000047" 75ns
+        -- expect x"00000047" 68ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- or -------------------------------------
@@ -554,9 +530,6 @@ BEGIN
         --------------------------- nor -------------------------------------
 
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000007";
         EX_Rt_in <= x"00000042";
@@ -576,7 +549,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"fffffff8" 78ns
+        -- expect x"fffffff8" 70ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- nor -------------------------------------
@@ -584,9 +557,6 @@ BEGIN
         --------------------------- xor -------------------------------------
 
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000007";
         EX_Rt_in <= x"00000042";
@@ -606,16 +576,13 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect "00000000000000000000000001000101" 81ns
+        -- expect "00000000000000000000000001000101" 72ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- xor -------------------------------------
         --------------------------- lui -------------------------------------
 
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000007";
         EX_Rt_in <= x"00000042";
@@ -635,7 +602,7 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00070000" 84ns
+        -- expect x"00070000" 74ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -647,7 +614,7 @@ BEGIN
         Rt_mux_select0 <= '1';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00070000" 86ns
+        -- expect x"00190000" 76ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- lui -------------------------------------
@@ -655,9 +622,6 @@ BEGIN
         --------------------------- sll -------------------------------------
 
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000007";
         EX_Rt_in <= x"00000000";
@@ -677,7 +641,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000007" 89ns
+        -- expect x"00000007" 78ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -689,7 +653,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000038" 91ns
+        -- expect x"00000038" 80ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- sll -------------------------------------
@@ -697,9 +661,6 @@ BEGIN
         --------------------------- srl -------------------------------------
 
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00000000";
@@ -719,7 +680,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000567" 94ns
+        -- expect x"00000567" 82ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -731,7 +692,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00070000" 96ns
+        -- expect x"00070000" 84ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- srl -------------------------------------
@@ -739,9 +700,6 @@ BEGIN
         --------------------------- sra -------------------------------------
 
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00000000";
@@ -761,7 +719,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect "00000000000000000000010101100111" 99ns
+        -- expect "00000000000000000000010101100111" 86ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -773,7 +731,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect "00000000000000000000000000101011" 101ns
+        -- expect "00000000000000000000000000101011" 88ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -786,7 +744,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect "11110000000000000000000010110101" 103ns
+        -- expect "11110000000000000000000010110101" 90ns
         REPORT to_string(EX_data_out) SEVERITY note;
         WAIT FOR clk_period;
 
@@ -798,16 +756,13 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect "11111111100000000000000000000101" 105ns
+        -- expect "11111111100000000000000000000101" 92ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- sra -------------------------------------
 
         --------------------------- lw -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00001002";
@@ -827,16 +782,13 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00001569" 108ns
+        -- expect x"00001569" 94ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- lw -------------------------------------
 
         --------------------------- sw -------------------------------------
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00002030";
@@ -856,7 +808,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00002597" 111ns
+        -- expect x"00002597" 96ns
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- sw -------------------------------------
@@ -864,9 +816,6 @@ BEGIN
         --------------------------- stall -------------------------------------
 
         WAIT FOR clk_period;
-        ex_reset <= '1';
-        WAIT FOR clk_period;
-        ex_reset <= '0';
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00002030";
@@ -888,7 +837,7 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- 114ns
+        -- 98ns
         REPORT to_string(EX_data_out) SEVERITY note;
         REPORT to_string(WB_enable_out) SEVERITY note;
         REPORT to_string(store_enable_out) SEVERITY note;
@@ -898,7 +847,7 @@ BEGIN
 
         ex_stall <= '0';
         WAIT FOR clk_period;
-        -- 115ns
+        -- 100ns
         REPORT to_string(EX_data_out) SEVERITY note;
         REPORT to_string(WB_enable_out) SEVERITY note;
         REPORT to_string(store_enable_out) SEVERITY note;

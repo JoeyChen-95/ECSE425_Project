@@ -7,7 +7,6 @@ ENTITY EX IS
   PORT (
     -- clock, reset, stall
     ex_clock : IN STD_LOGIC;
-    ex_reset : IN STD_LOGIC;
     ex_stall : IN STD_LOGIC;
 
     EX_Rs_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --Rs
@@ -48,8 +47,7 @@ ARCHITECTURE ex_architecture OF EX IS
     PORT (
       -- clock, reset, stall
       ALU_clock : IN STD_LOGIC;
-      --       ALU_reset: in std_logic;
-      --       ALU_stall: in std_logic;
+
       -- Rs,Rt,operand, output result
       ALU_RS : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
       ALU_RT_or_immediate : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- Rt or the immediate value
@@ -141,28 +139,12 @@ BEGIN
     mux_4_output => mux_4_Rt_output
   );
 
-  PROCESS (ex_clock, ex_reset, ex_stall)
+  PROCESS (ex_clock, ex_stall)
 
   BEGIN
-    -- When reset
-    IF ex_reset'event AND ex_reset = '1' THEN
-      -- make signal to be 0
-      temp_EX_Rs <= (OTHERS => '0');
-      temp_EX_Rt <= (OTHERS => '0');
-      temp_Rs_mux_select0 <= '0';
-      temp_Rs_mux_select1 <= '0';
-      temp_Rt_mux_select0 <= '0';
-      temp_Rt_mux_select1 <= '0';
 
-      mem_data_out <= (OTHERS => '0');
-      WB_enable_out <= '0';
-      load_enable_out <= '0';
-      store_enable_out <= '0';
-      Rd_out <= "00000";
-
-      -- When stall
-    ELSIF ex_stall'event AND ex_stall = '1' THEN
-      REPORT "stall" SEVERITY error;
+    -- When stall
+    IF ex_stall'event AND ex_stall = '1' THEN
       -- add $r0, $r0, $r0
 
       --set the operand code to be add, 000000
@@ -186,8 +168,7 @@ BEGIN
       store_enable_out <= '0';
       Rd_out <= "00000";
 
-    ELSIF ex_clock'event AND ex_clock = '1' THEN
-      REPORT "run" SEVERITY error;
+    ELSIF ex_clock'event AND ex_clock = '1' AND ex_stall = '0' THEN
       --  run normally
 
       -- pass the Rs and Rt value to the temp signals, later temp signals will be sent to  mux
