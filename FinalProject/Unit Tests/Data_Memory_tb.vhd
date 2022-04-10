@@ -1,84 +1,117 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.all;
-USE ieee.numeric_std.all;
+-- Code your testbench here
+library IEEE;
+use IEEE.std_logic_1164.all;
+use ieee.numeric_std.all;
 
-ENTITY memory_tb IS
-END memory_tb;
+entity MEM_tb is
+end MEM_tb;
 
-ARCHITECTURE behaviour OF memory_tb IS
+architecture behaviour of MEM_tb is
+	component MEM is
+    	port(
+        		clk: in std_logic;
+  
+  				reset: in std_logic;
+  
+  				data_in_forward: in std_logic_vector(31 downto 0); -- 
+  
+  				forward_select: in std_logic; -- Original: data_in_selected
+  
+ 				--From EX
+  				in_data: in std_logic_vector(31 downto 0); -- connect ex_mem_data_out
+  
+  				in_address: in std_logic_vector(31 downto 0); -- connect ex_ALU_result_out
+  
+  				access_memory_write: in std_logic :='0'; -- connect register out
+  
+  				access_memory_load: in std_logic := '1'; -- connect storeen out
 
---Declare the component that you are testing:
-    COMPONENT data_memory IS
-        GENERIC(
-            RAM_SIZE : INTEGER := 8192;
-            CLOCK_PERIOD : time := 1 ns;
-        );
-        PORT (
-            clock: IN STD_LOGIC;
-            reset: in std_logic;
-            writedata: IN STD_LOGIC_VECTOR (31 DOWNTO 0);
-            address: IN INTEGER RANGE 0 TO RAM_SIZE-1;
-            memwrite: IN STD_LOGIC := '0';
-            memread: IN STD_LOGIC := '0';
-            readdata: OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
-        );
-    END COMPONENT;
-
-    --all the input signals with initial values
-    signal clk : std_logic := '0';
-    signal reset: std_logic :='0';
+ 				access_reg_address_add_in: in std_logic_vector(4 downto 0); -- connect with ex)dest_regadd_out 
+  
+ 				access_reg_address_in: in std_logic; -- connect ex_reg_en_out
+  				-- eight bits
+  
+  				-- Output 
+  
+  				-- TO WB
+  				out_data: out std_logic_vector(31 downto 0):= (others=> 'Z');
+  				access_reg_out: out std_logic;
+  				access_reg_add_out: out std_logic_vector (4 downto 0);
+		);
+	end component;
+    
+    --input
     constant clk_period : time := 1 ns;
-    signal writedata: std_logic_vector(31 downto 0);
-    signal address: INTEGER RANGE 0 TO 8191;
-    signal memwrite: STD_LOGIC := '0';
-    signal memread: STD_LOGIC := '0';
-    signal readdata: STD_LOGIC_VECTOR (31 DOWNTO 0);
+    signal clk: std_logic;
+    signal reset: std_logic;
+    signal data_in_forward: std_logic_vector(31 downto 0);
+    signal forward_select: std_logic;
+    signal in_data: std_logic_vector(31 downto 0);
+    signal in_address: std_logic_vector(31 downto 0) :=X"00000000";
+    signal access_memory_write: std_logic;
+    signal access_memory_load: std_logic;
+    signal access_reg_address_add_in: std_logic_vector(4 downto 0);
+    signal access_reg_address_in: std_logic;
+    -- output
+    signal out_data: std_logic_vector(31 downto 0):= (others=> 'Z');
+    signal access_reg_out: std_logic;
+    signal access_reg_add_out: std_logic_vector (4 downto 0);
+    
+begin
+dut: MEM
+port map(
+	clk=>clk,
+    reset=>reset,
+    data_in_forward=>data_in_forward,
+    forward_select=>forward_select,
+    in_data=>in_data,
+    in_address=>in_address,
+    access_memory_write=>access_memory_write,
+    access_memory_load=>access_memory_load,  
+    access_reg_address_add_in=>access_reg_address_add_in,
+    access_reg_address_in=>access_reg_address_in,
+    out_data=>out_data,
+    access_reg_out=>access_reg_out,
+    access_reg_add_out=>access_reg_add_out
+);
 
-BEGIN
+---------Clock Setup---------
+clk_process : process
+begin
+  clk <= '0';
+  wait for clk_period/2;
+  clk <= '1';
+  wait for clk_period/2;
+end process;
 
-    --dut => Device Under Test
-    dut: data_memory GENERIC MAP(
-   				RAM_SIZE=>8192
-                )
-                PORT MAP(
-                    clock=>clk,
-                    reset=>reset,
-                    writedata=>writedata,
-                    address=>address,
-                    memwrite=>memwrite,
-                    memread=>memread,
-                    readdata=>readdata
-                );
-
-    clk_process : process
-    BEGIN
-        clk <= '0';
-        wait for clk_period/2;
-        clk <= '1';
-        wait for clk_period/2;
-    end process;
-
-    test_process : process
-    BEGIN
-    	reset<='0';
-        wait for clk_period;
-        reset<='1';
-        wait for clk_period;
-        reset<='0';
-        wait for clk_period;
-        address <= 13; 
-        writedata <= X"aaaaaaaa";
-        memwrite <= '1';
-        wait for clk_period;
-        memwrite <= '0';
-        memread <= '1';
-        wait for clk_period;
-        report "KOKOKOKO";
-        address <= 88;
-        memwrite <= '0';
-        memread <= '1';
-        wait;
-    END PROCESS;
-
- 
-END;
+test_process: process
+begin
+	wait for clk_period;
+    reset<='0';
+    wait for clk_period;
+    reset<='1';
+    wait for clk_period;
+    reset<='0';
+    wait for 10*clk_period;
+	access_reg_address_add_in<="11111";
+	access_reg_address_in<='1';
+    wait for clk_period;
+    assert access_reg_add_out = "11111" report "access_reg_add_out error!!!" severity error;
+    assert access_reg_out = '1' report "access_reg_out error!!!" severity error;
+    wait for 10*clk_period;
+    access_memory_write<='1';
+    access_memory_load<='0';
+    wait for 10*clk_period;
+    in_address<=x"00000ddc";
+    in_data<=x"eeeeeeee";
+    data_in_forward<=x"0000ddcc";
+    wait for clk_period;
+    access_memory_write<='0';
+    access_memory_load<='1';
+    wait for 3*clk_period;
+    access_memory_write<='0';
+    access_memory_load<='1';
+    in_address<=x"000000a0";
+    wait;
+end process;
+end;
