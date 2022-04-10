@@ -44,13 +44,12 @@ entity MEM is
   out_data: out std_logic_vector(31 downto 0):= (others=> 'Z');
   access_reg_out: out std_logic;
   access_reg_add_out: out std_logic_vector (4 downto 0);
-  out_waitrequest: out std_logic;
   );
 end MEM;
 
 architecture behavior of MEM is
 
-signal memory_in_address: std_logic_vector(31 downto 0); 
+signal memory_in_address: INTEGER RANGE 0 TO 8191; 
 signal memory_write_data:std_logic_vector (31 downto 0); -- this is the input data of data_memory
 signal memory_out_data:std_logic_vector (31 downto 0); -- this is the output data of data_memory
 -- signal memory_waitrequest: std_logic;
@@ -60,27 +59,13 @@ begin
   memorydata: entity data_memory 
   PORT MAP (
   clock=>clk,
+  reset=>reset,
   writedata=>memory_write_data,
   address=>memory_in_address,
   memwrite=>access_memory_write,
-  memread=>null_signal, -- useless signal
-  readdata=>memory_out_data,
-  waitrequest=>out_waitrequest
+  memread=>access_memory_load, -- useless signal
+  readdata=>memory_out_data
   );
-  
-process(clk,reset)
-begin
-  if(rising_edge(clk)) then
-  access_reg_out<=access_reg_address_in; --just send to WB stage 
-  access_reg_add_out<=access_reg_address_add_in; -- just send to WB stage
-  	if(access_memory_load='1') then
-  		out_data<=memory_write_data;
-    	else
-    	out_data<=std_logic_vector(to_unsigned(0,32));
-  	end if;
-  end if;
-end process; 
-
 -- decide which data to write in
 -- write 1.forwarding data or 2. normal in data
 with forward_select select memory_write_data <=
@@ -88,7 +73,26 @@ data_in_forward when '1',
 in_data when others;
 
 --decide the write in address 
-memory_in_address<= in_address when (access_memory_load='1') 
-else (OTHERS =>'0');
+with access_memory_load select memory_in_address <=
+to_integer(unsigned(in_address)) when '1',
+0 when others;
+-- memory_in_address <= to_integer(unsigned(in_address)) when (access_memory_load='1') 
+-- else (OTHERS => 1);
+
+process(clk,reset)
+begin
+  if(rising_edge(clk)) then
+  report to_string(to_integer(unsigned(in_address)));
+  access_reg_out<=access_reg_address_in; --just send to WB stage 
+  access_reg_add_out<=access_reg_address_add_in; -- just send to WB stage
+  	if(access_memory_load='1') then  
+  		out_data<=memory_out_data;
+    	else
+    	out_data<=std_logic_vector(to_unsigned(0,32));
+  	end if;
+  end if;
+end process; 
+
+
 
 end behavior;
