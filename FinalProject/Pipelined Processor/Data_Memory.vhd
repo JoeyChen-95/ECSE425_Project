@@ -5,7 +5,7 @@ USE ieee.numeric_std.ALL;
 
 ENTITY data_memory IS
 	GENERIC (
-		RAM_SIZE : INTEGER := 22;
+		RAM_SIZE : INTEGER := 8192;
 		CLOCK_PERIOD : TIME := 1 ns;
 	);
 	PORT (
@@ -31,7 +31,7 @@ BEGIN
 			-- We shall reset the entire data memory
 			-- to its initial value, id est, 0.
 			FOR i IN 0 TO RAM_SIZE - 1 LOOP
-				ram_block(i) <= X"00000000";
+				ram_block(i) <= X"aaaaaaaa";
 			END LOOP;
 		END IF;
         
@@ -41,8 +41,8 @@ BEGIN
              end if;
              if(memread='1') then
              	readdata <= ram_block(address);
+                report to_string(readdata);
              end if;
          end if;
 	END PROCESS;
---     readdata <= ram_block(address);
 END rtl;
