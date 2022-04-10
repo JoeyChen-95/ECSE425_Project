@@ -31,17 +31,16 @@ BEGIN
 			-- We shall reset the entire data memory
 			-- to its initial value, id est, 0.
 			FOR i IN 0 TO RAM_SIZE - 1 LOOP
-				ram_block(i) <= X"aaaaaaaa";
+				ram_block(i) <= X"00000000";
 			END LOOP;
 		END IF;
         
-        if(clock'event and clock='1') then
+        if(clock'event) then
         	if(memwrite='1') then
             	ram_block(address)<=writedata;
              end if;
              if(memread='1') then
              	readdata <= ram_block(address);
-                report to_string(readdata);
              end if;
          end if;
 	END PROCESS;
