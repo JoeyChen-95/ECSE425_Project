@@ -13,16 +13,16 @@ ARCHITECTURE Ins_MEM_testbench OF Ins_MEM_tb is
           address 	: IN INTEGER RANGE 0 TO 1024 - 1;
           memread 	: IN STD_LOGIC;
           readdata 	: OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
-          waitrequest : OUT STD_LOGIC
+          waitrequest 	: OUT STD_LOGIC
       );
     END COMPONENT;
     
     -- test signals
     constant clk_period : time := 1 ns;
-    signal clk 			: std_logic := '0';
-    signal reset 		: STD_LOGIC;
-    signal address 		: INTEGER RANGE 0 TO 1024 - 1;
-    signal memread 		: STD_LOGIC;
+    signal clk 		: std_logic := '0';
+    signal reset 	: STD_LOGIC;
+    signal address 	: INTEGER RANGE 0 TO 1024 - 1;
+    signal memread 	: STD_LOGIC;
     signal readdata 	: STD_LOGIC_VECTOR (31 DOWNTO 0);
     signal waitrequest 	: STD_LOGIC;
      
@@ -50,13 +50,13 @@ begin
   
   test_process : process
   begin
-	-- Reset
-	wait for clk_period;
-	reset <= '0';
-	wait for clk_period;
-	reset <= '1';
+    -- Reset
+    wait for clk_period;
+    reset <= '0';
+    wait for clk_period;
+    reset <= '1';
     memread <= '0';
-	wait for clk_period;
+    wait for clk_period;
     reset <= '0';
     
     --First Line
