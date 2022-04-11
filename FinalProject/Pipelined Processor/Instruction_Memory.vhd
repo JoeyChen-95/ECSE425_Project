@@ -3,13 +3,13 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 USE STD.textio.ALL;
 
-ENTITY Main_Memory IS
+ENTITY Instruction_Memory IS
     GENERIC (
         -- We only need to store at most 1024 instructions.
         RAM_SIZE : INTEGER := 1024;
         CLOCK_PERIOD : TIME := 1 ns;
         INSTRUCTION_FILE_ADDRESS : STRING := "code.txt";
-        BITS_IN_INSTRUCTION : INTEGER := 32;
+        BITS_IN_INSTRUCTION : INTEGER := 32
     );
     PORT (
         clock : IN STD_LOGIC;
@@ -19,10 +19,10 @@ ENTITY Main_Memory IS
         readdata : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
         waitrequest : OUT STD_LOGIC
     );
-END Main_Memory;
+END Instruction_Memory;
 
-ARCHITECTURE rtl OF Main_Memory IS
-    TYPE MEM IS ARRAY(RAM_SIZE - 1 DOWNTO 0) OF STD_LOGIC_VECTOR(31 DOWNTO 0); -- TODO: Changed for compared
+ARCHITECTURE rtl OF Instruction_Memory IS
+    TYPE MEM IS ARRAY(RAM_SIZE - 1 DOWNTO 0) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL ram_block : MEM;
 BEGIN
 
@@ -63,10 +63,12 @@ BEGIN
                         instruction(BITS_IN_INSTRUCTION - i) := '1';
                     END IF;
                 END LOOP;
-
+						
                 -- Store the current instruction into memory.
-                ram_block(instruction_counter) <= instruction;
-                instruction_counter := instruction_counter + 1;
+					 IF instruction_counter < 1024 THEN
+							ram_block(instruction_counter) <= instruction;
+							instruction_counter := instruction_counter + 1;
+					 END IF;
             END LOOP;
         END IF;
     END PROCESS;
