@@ -17,13 +17,18 @@ BEGIN
     -- for branching. In this component, we could 
     -- encounter 5 cases. For each of them, we have
     -- a specifcal branch code.
-    -- 1. beq (000)
-    -- 2. bne (001)
-    -- 3. j   (010)
-    -- 4. jr  (011)
-    -- 5. jal (100)
+    -- 1. beq       (000)
+    -- 2. bne       (001)
+    -- 3. j         (010)
+    -- 4. jr        (011)
+    -- 5. jal       (100)
+    -- 6. no branch (101)
 
-    IF (branch_ctl = "000") THEN
+    IF (branch_ctl = "101") THEN
+        -- no branch
+        branch_taken <= '0';
+
+    ELSIF (branch_ctl = "000") THEN
         -- beq
         branch_taken <= '1' WHEN reg1 = reg2 ELSE
             '0';

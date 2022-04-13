@@ -73,7 +73,7 @@ BEGIN
             -- to write data from "WB"stage
             -- back to registers. Note that
             -- we must not write back to R0.
-            IF (wb_write_enable = '1' AND to_integer(unsigned_wb_write_address) /= 0) THEN
+            IF (wb_write_enable = '1' AND to_integer(unsigned(wb_write_address)) /= 0) THEN
                 registers(to_integer(unsigned(wb_write_address))) <= wb_write_data;
             END IF;
         END IF;
