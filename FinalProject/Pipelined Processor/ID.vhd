@@ -362,7 +362,23 @@ BEGIN
 
                 ELSIF (opcode = "101011") THEN
                     -- SW
+                    r1 <= rs;
+                    r2 <= rt;
+                    Rd <= (OTHERS => '0');
+                    ID_Op_code <= "010101";
 
+                    -- J-specific signals.
+                    branch_ctl <= "101";
+                    imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), imm_output_internal'length));
+                    branch_ri_control <= '1';
+                    link_enable <= '0';
+                    link_val <= pc_in;
+
+                    -- Set common signals.
+                    WB_enable <= '0';
+                    imm_enable <= '1';
+                    store_enable <= '1';
+                    load_enable <= '0';
                 ELSIF (opcode = "100011") THEN
                     -- LW
 
