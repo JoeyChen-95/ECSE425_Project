@@ -73,14 +73,6 @@ BEGIN
         END IF;
     END PROCESS;
 
-    -- This is the process to fetch instructions from
-    -- the memory. 
-    fetch_instruction_process : PROCESS (memread)
-    BEGIN
-        IF (rising_edge(memread)) THEN
-            waitrequest <= '0', '1' AFTER CLOCK_PERIOD;
-            readdata <= ram_block(address);
-        END IF;
-    END PROCESS;
+    readdata <= ram_block(address);
 
 END rtl;
