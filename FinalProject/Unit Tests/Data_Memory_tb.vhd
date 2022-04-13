@@ -1,117 +1,144 @@
--- Code your testbench here
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
+USE std.textio.ALL;
 
-ENTITY MEM_tb IS
-END MEM_tb;
+ENTITY Data_Memory_tb IS
+END Data_Memory_tb;
 
-ARCHITECTURE behaviour OF MEM_tb IS
-    COMPONENT MEM IS
-        PORT (
-            clk : IN STD_LOGIC;
-
-            reset : IN STD_LOGIC;
-
-            data_in_forward : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- 
-
-            forward_select : IN STD_LOGIC; -- Original: data_in_selected
-
-            --From EX
-            in_data : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- connect ex_mem_data_out
-
-            in_address : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- connect ex_ALU_result_out
-
-            access_memory_write : IN STD_LOGIC := '0'; -- connect register out
-
-            access_memory_load : IN STD_LOGIC := '1'; -- connect storeen out
-
-            access_reg_address_add_in : IN STD_LOGIC_VECTOR(4 DOWNTO 0); -- connect with ex)dest_regadd_out 
-
-            access_reg_address_in : IN STD_LOGIC; -- connect ex_reg_en_out
-            -- eight bits
-
-            -- Output 
-
-            -- TO WB
-            out_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => 'Z');
-            access_reg_out : OUT STD_LOGIC;
-            access_reg_add_out : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
-        );
+ARCHITECTURE behaviour OF Data_Memory_tb IS
+    COMPONENT Data_Memory IS
+      PORT (
+          dump 		: IN STD_LOGIC;
+          clock 	: IN STD_LOGIC;
+          reset 	: IN STD_LOGIC;
+          writedata : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+          address 	: IN INTEGER RANGE 0 TO 8192 - 1;
+          memwrite 	: IN STD_LOGIC;
+          readdata 	: OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+      );
     END COMPONENT;
-
+    
     --input
     CONSTANT clk_period : TIME := 1 ns;
-    SIGNAL clk : STD_LOGIC;
-    SIGNAL reset : STD_LOGIC;
-    SIGNAL data_in_forward : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL forward_select : STD_LOGIC;
-    SIGNAL in_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL in_address : STD_LOGIC_VECTOR(31 DOWNTO 0) := X"00000000";
-    SIGNAL access_memory_write : STD_LOGIC;
-    SIGNAL access_memory_load : STD_LOGIC;
-    SIGNAL access_reg_address_add_in : STD_LOGIC_VECTOR(4 DOWNTO 0);
-    SIGNAL access_reg_address_in : STD_LOGIC;
+    SIGNAL dump 	 	: STD_LOGIC;
+    SIGNAL clk	 	 	: STD_LOGIC;
+    SIGNAL reset 	 	: STD_LOGIC;
+    SIGNAL writedata 	: STD_LOGIC_VECTOR (31 DOWNTO 0);
+    SIGNAL address 		: INTEGER RANGE 0 TO 8192 - 1;
+    SIGNAL memwrite 	: STD_LOGIC;
+    
     -- output
-    SIGNAL out_data : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => 'Z');
-    SIGNAL access_reg_out : STD_LOGIC;
-    SIGNAL access_reg_add_out : STD_LOGIC_VECTOR (4 DOWNTO 0);
+    SIGNAL readdata : STD_LOGIC_VECTOR (31 DOWNTO 0);
+    SIGNAL mem_data	: STD_LOGIC_VECTOR (31 DOWNTO 0);
+    SIGNAL line_counter : INTEGER := 0;
 
 BEGIN
-    dut : MEM
+    DM : Data_Memory
     PORT MAP(
-        clk => clk,
+        dump => dump,
+        clock => clk,
         reset => reset,
-        data_in_forward => data_in_forward,
-        forward_select => forward_select,
-        in_data => in_data,
-        in_address => in_address,
-        access_memory_write => access_memory_write,
-        access_memory_load => access_memory_load,
-        access_reg_address_add_in => access_reg_address_add_in,
-        access_reg_address_in => access_reg_address_in,
-        out_data => out_data,
-        access_reg_out => access_reg_out,
-        access_reg_add_out => access_reg_add_out
+        writedata => writedata,
+        address => address,
+        memwrite => memwrite,
+        readdata => readdata
     );
 
     ---------Clock Setup---------
-    clk_process : PROCESS
-    BEGIN
-        clk <= '0';
-        WAIT FOR clk_period/2;
-        clk <= '1';
-        WAIT FOR clk_period/2;
-    END PROCESS;
+  	clk_process : process
+  	begin
+    	clk <= '1';
+    	wait for clk_period/2;
+    	clk <= '0';
+    	wait for clk_period/2;
+  	end process;
+  
+  
+  test_process : process
+    FILE file_ptr 		: text;
+    VARIABLE file_line 	: line;
+    VARIABLE line_content : STRING(1 TO 32);
+    VARIABLE char 		: CHARACTER := '0';
+    VARIABLE mem_out	: STD_LOGIC_VECTOR(32 - 1 DOWNTO 0);
+    
+    begin
+    -- Reset
+      wait for clk_period;
+      dump <= '0';
+      reset <= '0';
+      memwrite <= '0';
+    
+      wait for clk_period;
+      reset <= '1';
 
-    test_process : PROCESS
-    BEGIN
-        WAIT FOR clk_period;
-        reset <= '0';
-        WAIT FOR clk_period;
-        reset <= '1';
-        WAIT FOR clk_period;
-        reset <= '0';
-        WAIT FOR 10 * clk_period;
-        access_reg_address_add_in <= "11111";
-        access_reg_address_in <= '1';
-        WAIT FOR clk_period;
-        ASSERT access_reg_add_out = "11111" REPORT "access_reg_add_out error!!!" SEVERITY error;
-        ASSERT access_reg_out = '1' REPORT "access_reg_out error!!!" SEVERITY error;
-        WAIT FOR 10 * clk_period;
-        access_memory_write <= '1';
-        access_memory_load <= '0';
-        WAIT FOR 10 * clk_period;
-        in_address <= x"00000ddc";
-        in_data <= x"eeeeeeee";
-        data_in_forward <= x"0000ddcc";
-        WAIT FOR clk_period;
-        access_memory_write <= '0';
-        access_memory_load <= '1';
-        WAIT FOR 3 * clk_period;
-        access_memory_write <= '0';
-        access_memory_load <= '1';
-        in_address <= x"000000a0";
-        WAIT;
-    END PROCESS;
-END;
+      wait for clk_period;
+      reset <= '0';
+      dump <= '1';
+
+      wait for clk_period;
+      dump <= '0';
+      file_open(file_ptr, "memory.txt", READ_MODE);
+
+      --First Line
+      wait for clk_period;
+      address <= 0;
+      ASSERT readdata = x"00000000" REPORT "DATA RESET UNSUCESSFUL" SEVERITY error;
+
+      --Last Line
+      wait for clk_period;
+      address <= 8191;
+      ASSERT readdata = x"00000000" REPORT "DATA RESET UNSUCESSFUL" SEVERITY error;
+	  
+      --First Line Write
+      wait for clk_period;
+      memwrite <= '1';
+      address <= 0;
+      writedata <= x"12345678";
+      wait for clk_period;
+      ASSERT readdata = x"12345678" REPORT "DATA WRITE UNSUCESSFUL" SEVERITY error;
+	
+      --Forth Line Write
+      wait for clk_period;
+      address <= 3;
+      writedata <= x"87654321";
+      wait for clk_period;
+      ASSERT readdata = x"87654321" REPORT "DATA WRITE UNSUCESSFUL" SEVERITY error;
+      
+      --Ninth Line Write
+      wait for clk_period;
+      address <= 8;
+      writedata <= x"AAABBBCC";
+      wait for clk_period;
+      ASSERT readdata = x"AAABBBCC" REPORT "DATA WRITE UNSUCESSFUL" SEVERITY error;
+
+	  wait for clk_period;
+      memwrite <= '0';
+      dump <= '1';
+      
+      wait for clk_period;
+      dump <= '0';
+
+      WHILE NOT endfile(file_ptr) LOOP
+          readline(file_ptr, file_line);
+          read(file_line, line_content);
+
+          FOR i IN 1 TO 32 LOOP
+            char := line_content(i);
+            IF (char = '0') THEN
+              mem_out(32 - i) := '0';
+            ELSE
+              mem_out(32 - i) := '1';
+            END IF;
+          END LOOP;
+          mem_data <= mem_out;
+          line_counter <= line_counter + 1;
+          wait for clk_period;
+      END LOOP;  
+
+      file_close(file_ptr);
+
+      WAIT;
+  end process;
+end architecture;
+  
