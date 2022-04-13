@@ -433,10 +433,91 @@ BEGIN
                         WB_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                    ELSIF (opcode = "")
+                    ELSIF (opcode = "001000") THEN
+                        -- ADDI
+                        Rd <= rt;
+                        ID_Op_code <= "000010";
 
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), imm_output_internal'length));
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '1';
+                        store_enable <= '0';
+                        load_enable <= '0';
+                    ELSIF (opcode = "001010") THEN
+                        -- SLTI
+                        Rd <= rt;
+                        ID_Op_code <= "000110";
+
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm), imm_output_internal'length));
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '1';
+                        store_enable <= '0';
+                        load_enable <= '0';
+                    ELSIF (opcode = "001100") THEN
+                        -- ANDI
+                        Rd <= rt;
+                        ID_Op_code <= "001011";
+
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm), imm_output_internal'length));
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '1';
+                        store_enable <= '0';
+                        load_enable <= '0';
+                    ELSIF (opcode = "001101") THEN
+                        -- ORI
+                        Rd <= rt;
+                        ID_Op_code <= "001100";
+
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm), imm_output_internal'length));
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '1';
+                        store_enable <= '0';
+                        load_enable <= '0';
+                    ELSIF (opcode = "001110") THEN
+                        -- XORI
+                        Rd <= rt;
+                        ID_Op_code <= "001101";
+
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm), imm_output_internal'length));
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '1';
+                        store_enable <= '0';
+                        load_enable <= '0';
+                    ELSIF (opcode = "001111") THEN
+                        -- LUI
+                        Rd <= rt;
+                        ID_Op_code <= "010000";
+
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm), imm_output_internal'length));
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '1';
+                        store_enable <= '0';
+                        load_enable <= '0';
                     END IF;
-
                 END IF;
             END IF;
         END IF;
