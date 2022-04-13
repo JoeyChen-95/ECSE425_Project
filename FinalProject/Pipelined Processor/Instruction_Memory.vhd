@@ -64,11 +64,12 @@ BEGIN
                 END LOOP;
 						
                 -- Store the current instruction into memory.
-					 IF instruction_counter < 1024 THEN
-						ram_block(instruction_counter) <= instruction;
-                        instruction_counter := instruction_counter + 1;
-					 END IF;
+	    	IF instruction_counter < 1024 THEN
+			ram_block(instruction_counter) <= instruction;
+		    	instruction_counter := instruction_counter + 1;
+		END IF;
             END LOOP;
+	    file_close(file_ptr);
         END IF;
     END PROCESS;
 
