@@ -4,7 +4,7 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 USE std.textio.ALL;
 
-ENTITY data_memory IS
+ENTITY Data_Memory IS
 	GENERIC (
 		RAM_SIZE : INTEGER := 8192;
 		CLOCK_PERIOD : TIME := 1 ns;
@@ -20,9 +20,9 @@ ENTITY data_memory IS
 		memread : IN STD_LOGIC;
 		readdata : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
 	);
-END data_memory;
+END Data_Memory;
 
-ARCHITECTURE rtl OF data_memory IS
+ARCHITECTURE rtl OF Data_Memory IS
 	TYPE MEM IS ARRAY(RAM_SIZE - 1 DOWNTO 0) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
 	SIGNAL ram_block : MEM;
 	SIGNAL read_address_reg : INTEGER RANGE 0 TO RAM_SIZE - 1;
