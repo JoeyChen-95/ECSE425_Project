@@ -360,33 +360,84 @@ BEGIN
                     store_enable <= '0';
                     load_enable <= '0';
 
-                ELSIF (opcode = "101011") THEN
-                    -- SW
+                ELSE
+                    -- I-type Instructions.
+                    imm_enable <= '1';
                     r1 <= rs;
                     r2 <= rt;
-                    Rd <= (OTHERS => '0');
-                    ID_Op_code <= "010101";
-
-                    -- J-specific signals.
-                    branch_ctl <= "101";
-                    imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), imm_output_internal'length));
-                    branch_ri_control <= '1';
                     link_enable <= '0';
                     link_val <= pc_in;
 
-                    -- Set common signals.
-                    WB_enable <= '0';
-                    imm_enable <= '1';
-                    store_enable <= '1';
-                    load_enable <= '0';
-                ELSIF (opcode = "100011") THEN
-                    -- LW
+                    IF (opcode = "101011") THEN
+                        -- SW
+                        Rd <= (OTHERS => '0');
+                        ID_Op_code <= "010101";
 
-                ELSE
-                    -- I-type Instructions.
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), imm_output_internal'length));
+                        branch_ri_control <= '1';
+
+                        -- Set common signals.
+                        WB_enable <= '0';
+                        store_enable <= '1';
+                        load_enable <= '0';
+                    ELSIF (opcode = "010100") THEN
+                        -- LW
+                        Rd <= rt;
+                        ID_Op_code <= "010101";
+
+                        -- J-specific signals.
+                        branch_ctl <= "101";
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), imm_output_internal'length));
+                        branch_ri_control <= '1';
+
+                        -- Set common signals.
+                        WB_enable <= '1';
+                        store_enable <= '0';
+                        load_enable <= '1';
+
+                    ELSIF (opcode = "000100") THEN
+                        -- BEQ
+                        Rd <= (OTHERS => '0');
+                        ID_Op_code <= (OTHERS => '0');
+
+                        -- J-specific signals.
+                        branch_ctl <= "000";
+                        IF (signed(imm) >= 0) THEN
+                            imm_output_internal <= to_std_logic_vector(unsigned(pc_in) + unsigned(imm) * 4);
+                        ELSE
+                            imm_output_internal <= to_std_logic_vector(unsigned(pc_in) - unsigned(imm) * 4);
+                        END IF
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '0';
+                        store_enable <= '0';
+                        load_enable <= '0';
+                    ELSIF (opcode = "000101") THEN
+                        -- BNE
+                        Rd <= (OTHERS => '0');
+                        ID_Op_code <= (OTHERS => '0');
+
+                        -- J-specific signals.
+                        branch_ctl <= "001";
+                        IF (signed(imm) >= 0) THEN
+                            imm_output_internal <= to_std_logic_vector(unsigned(pc_in) + unsigned(imm) * 4);
+                        ELSE
+                            imm_output_internal <= to_std_logic_vector(unsigned(pc_in) - unsigned(imm) * 4);
+                        END IF
+                        branch_ri_control <= '0';
+
+                        -- Set common signals.
+                        WB_enable <= '0';
+                        store_enable <= '0';
+                        load_enable <= '0';
+                    ELSIF (opcode = "")
+
+                    END IF;
 
                 END IF;
-
             END IF;
         END IF;
 
