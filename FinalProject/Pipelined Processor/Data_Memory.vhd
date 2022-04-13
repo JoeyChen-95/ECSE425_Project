@@ -8,7 +8,7 @@ ENTITY data_memory IS
 	GENERIC (
 		RAM_SIZE : INTEGER := 8192;
 		CLOCK_PERIOD : TIME := 1 ns;
-        REGISTER_FILE_ADDRESS : STRING := "memory.txt";
+        	REGISTER_FILE_ADDRESS : STRING := "memory.txt";
 	);
 	PORT (
 		dump : IN STD_LOGIC;
@@ -42,12 +42,9 @@ BEGIN
 			END LOOP;
 		END IF;
 
-		IF (clock'event) THEN
+		IF (falling_edge(clock)) THEN
 			IF (memwrite = '1') THEN
 				ram_block(address) <= writedata;
-			END IF;
-			IF (memread = '1') THEN
-				readdata <= ram_block(address);
 			END IF;
 		END IF;
 
@@ -60,4 +57,5 @@ BEGIN
 			END LOOP;
         end if;
 	END PROCESS;
+		    readdata <= ram_block(address);
 END rtl;
