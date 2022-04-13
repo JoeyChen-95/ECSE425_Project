@@ -47,6 +47,8 @@ ARCHITECTURE arch OF ID IS
 
     SIGNAL branch_address_internal : STD_LOGIC_VECTOR(31 DOWNTO 0); -- The calculated branch address.
     SIGNAL branch_ri_control : STD_LOGIC; -- Used to toggle between rs and imm for branch address.
+    SIGNAL link_enable : STD_LOGIC -- Enable the register to store link address.
+    SIGNAL link_val : STD_LOGIC_VECTOR(31 DOWNTO 0) -- The link address.
 
 BEGIN
 
@@ -62,6 +64,8 @@ BEGIN
             wb_write_data => wb_data;
             reg1_out => rs_out_internal;
             reg2_out => rt_out_internal;
+            link_enable => link_enable;
+            link_val => link_val;
         );
 
     comparator : ENTITY.work.Comparator
@@ -122,6 +126,8 @@ BEGIN
                     r1 <= rs;
                     r2 <= rt;
                     Rd <= rd;
+                    link_enable <= '0';
+                    link_val <= (OTHERS => '0');
 
                     -- For each of the instruction
                     -- below, we only need to
@@ -321,8 +327,10 @@ BEGIN
 
                     -- J-specific signals.
                     branch_ctl <= "010";
-                    imm_output_internal <= "010";
+                    imm_output_internal <= to_stdlogicvector(to_bitvector(STD_LOGIC_VECTOR(resize(signed(addr), imm_output_internal'length))) SLL 2);
                     branch_ri_control <= '0';
+                    link_enable <= '0';
+                    link_val <= (OTHERS => '0');
 
                     -- Set common signals.
                     WB_enable <= '0';
@@ -332,6 +340,25 @@ BEGIN
 
                 ELSIF (opcode = "000011") THEN
                     -- JAL
+
+                    -- We need to issue fake commands.
+                    r1 <= (OTHERS => '0');
+                    r2 <= (OTHERS => '0');
+                    Rd <= (OTHERS => '0');
+                    ID_Op_code <= (OTHERS => '0');
+
+                    -- J-specific signals.
+                    branch_ctl <= "010";
+                    imm_output_internal <= to_stdlogicvector(to_bitvector(STD_LOGIC_VECTOR(resize(signed(addr), imm_output_internal'length))) SLL 2);
+                    branch_ri_control <= '0';
+                    link_enable <= '1';
+                    link_val <= pc_in;
+
+                    -- Set common signals.
+                    WB_enable <= '0';
+                    imm_enable <= '0';
+                    store_enable <= '0';
+                    load_enable <= '0';
 
                 ELSIF (opcode = "101011") THEN
                     -- SW

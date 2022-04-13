@@ -18,6 +18,10 @@ ENTITY Registers IS
         wb_write_data : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         reg1_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         reg2_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+        -- For link only.
+        link_enable : IN STD_LOGIC;
+        link_val : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
     );
 END Registers;
 
@@ -75,6 +79,12 @@ BEGIN
             -- we must not write back to R0.
             IF (wb_write_enable = '1' AND to_integer(unsigned(wb_write_address)) /= 0) THEN
                 registers(to_integer(unsigned(wb_write_address))) <= wb_write_data;
+            END IF;
+
+        ELSIF (falling_edge(clock)) THEN
+            -- We shall scan for link command.
+            IF (link_enable = '1') THEN
+                registers(31) <= link_val;
             END IF;
         END IF;
 
