@@ -15,9 +15,7 @@ ENTITY Instruction_Memory IS
         clock : IN STD_LOGIC;
         reset : IN STD_LOGIC;
         address : IN INTEGER RANGE 0 TO RAM_SIZE - 1;
-        memread : IN STD_LOGIC;
-        readdata : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
-        waitrequest : OUT STD_LOGIC
+        readdata : OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
     );
 END Instruction_Memory;
 
@@ -55,6 +53,7 @@ BEGIN
             WHILE NOT endfile(file_ptr) LOOP
                 readline(file_ptr, file_line);
                 read(file_line, line_content);
+                
                 FOR i IN 1 TO BITS_IN_INSTRUCTION LOOP
                     char := line_content(i);
                     IF (char = '0') THEN
@@ -66,8 +65,8 @@ BEGIN
 						
                 -- Store the current instruction into memory.
 					 IF instruction_counter < 1024 THEN
-							ram_block(instruction_counter) <= instruction;
-							instruction_counter := instruction_counter + 1;
+						ram_block(instruction_counter) <= instruction;
+                        instruction_counter := instruction_counter + 1;
 					 END IF;
             END LOOP;
         END IF;
