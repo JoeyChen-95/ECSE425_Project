@@ -294,7 +294,7 @@ BEGIN
                         imm_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                    ELSIF (funct = "") THEN
+                    ELSIF (funct = "001000") THEN
                         -- JR
                         branch_ctl <= "010";
                         imm_output_internal <= (OTHERS >= '0');
@@ -310,7 +310,37 @@ BEGIN
                         store_enable <= '0';
                         load_enable <= '0';
                     END IF;
-                ELSIF (opcode = "") THEN
+                ELSIF (opcode = "000010") THEN
+                    -- J
+
+                    -- We need to issue fake commands.
+                    r1 <= (OTHERS => '0');
+                    r2 <= (OTHERS => '0');
+                    Rd <= (OTHERS => '0');
+                    ID_Op_code <= (OTHERS => '0');
+
+                    -- J-specific signals.
+                    branch_ctl <= "010";
+                    imm_output_internal <= "010";
+                    branch_ri_control <= '0';
+
+                    -- Set common signals.
+                    WB_enable <= '0';
+                    imm_enable <= '0';
+                    store_enable <= '0';
+                    load_enable <= '0';
+
+                ELSIF (opcode = "000011") THEN
+                    -- JAL
+
+                ELSIF (opcode = "101011") THEN
+                    -- SW
+
+                ELSIF (opcode = "100011") THEN
+                    -- LW
+
+                ELSE
+                    -- I-type Instructions.
 
                 END IF;
 
