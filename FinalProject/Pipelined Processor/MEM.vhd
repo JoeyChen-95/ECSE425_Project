@@ -10,7 +10,7 @@ ENTITY MEM IS
     dump : IN STD_LOGIC;
     clk : IN STD_LOGIC;
     reset : IN STD_LOGIC;
-    data_in_forward : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    data_forward : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
 
     --From EX
     mem_in_data : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- connect ex_mem_data_out
@@ -47,7 +47,7 @@ BEGIN
     in_address;
 
   -- For forwarding.
-  data_in_forward <= in_address;
+  data_forward <= in_address;
 
   -- Copy and send to WB
   wb_enable <= enable_writeback; --just send to WB stage 

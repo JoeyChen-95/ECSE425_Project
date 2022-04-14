@@ -7,12 +7,12 @@ ENTITY WB IS
   PORT (
     clk : IN STD_LOGIC; -- clock
 
-    --Input
+    -- WB Input
     mem_WB_enable : IN STD_LOGIC;
     mem_WB_address : IN STD_LOGIC_VECTOR (4 DOWNTO 0); -- This 31 should be modified to reg_adrsize
     mem_WB_data : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
 
-    --Output
+    -- WB Output
     WB_enable_out : OUT STD_LOGIC;
     WB_address_out : OUT STD_LOGIC_VECTOR (4 DOWNTO 0); -- This 31 should be modified to reg_adrsize
     WB_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);

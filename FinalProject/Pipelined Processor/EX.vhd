@@ -36,7 +36,7 @@ ENTITY EX IS
     rt_select_forwarding_mem : IN STD_LOGIC;
 
     -- Other signals.
-    mem_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+    mem_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
     EX_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0); -- result of ALU
   );
 
