@@ -17,6 +17,11 @@ ENTITY ID IS
         wb_write_address : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
         wb_data : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 
+        -- Signals passed to controller for forwarding 
+        -- and hazard detection
+        rs_idx : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+        rt_idx : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+
         -- Signals passed to the fetch stage due to branching.
         branch_taken : OUT STD_LOGIC;
         branch_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -74,6 +79,10 @@ BEGIN
             reg2 => rt_out_internal,
             branch_taken => branch_taken
         );
+
+    -- Pass on register information.
+    rs_idx <= r1;
+    rt_idx <= r2;
 
     -- The branch prediction, and branch control.
     branch_address_internal <= rs_out_internal WHEN branch_ri_control = '1' ELSE
