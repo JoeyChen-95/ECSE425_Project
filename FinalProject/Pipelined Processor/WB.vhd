@@ -6,7 +6,7 @@ USE work.memory_arbiter_lib.ALL;
 ENTITY WB IS
   PORT (
     clk : IN STD_LOGIC; -- clock
-    n_reset : IN STD_LOGIC; --reset
+
     --Input
     mem_WB_enable : IN STD_LOGIC;
     mem_WB_address : IN STD_LOGIC_VECTOR (4 DOWNTO 0); -- This 31 should be modified to reg_adrsize
@@ -22,13 +22,18 @@ END ENTITY;
 
 ARCHITECTURE behavior OF WB IS
 BEGIN
-  PROCESS (clk, n_reset)
-  BEGIN
-    IF (rising_edge(clk)) THEN
-      WB_enable_out <= mem_WB_enable;
-      WB_address_out <= mem_WB_address;
-      WB_data_out <= mem_WB_data;
-      WB_forwarding_data <= mem_WB_data;
-    END IF;
-  END PROCESS;
+  -- Hardwire the forwarding data to
+  -- the input, and thus this signal
+  -- can be ready at the rising edge of
+  -- a clock.
+  WB_forwarding_data <= mem_WB_data;
+
+  -- For other signals, we shall hard-
+  -- wire them as well because we want
+  -- them to get to registers before
+  -- the rising edge.
+  WB_enable_out <= mem_WB_enable;
+  WB_address_out <= mem_WB_address;
+  WB_data_out <= mem_WB_data;
+
 END behavior;
