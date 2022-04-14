@@ -53,7 +53,7 @@ BEGIN
             WHILE NOT endfile(file_ptr) LOOP
                 readline(file_ptr, file_line);
                 read(file_line, line_content);
-                
+
                 FOR i IN 1 TO BITS_IN_INSTRUCTION LOOP
                     char := line_content(i);
                     IF (char = '0') THEN
@@ -62,14 +62,14 @@ BEGIN
                         instruction(BITS_IN_INSTRUCTION - i) := '1';
                     END IF;
                 END LOOP;
-						
+
                 -- Store the current instruction into memory.
-	    	IF instruction_counter < 1024 THEN
-			ram_block(instruction_counter) <= instruction;
-		    	instruction_counter := instruction_counter + 1;
-		END IF;
+                IF instruction_counter < 1024 THEN
+                    ram_block(instruction_counter) <= instruction;
+                    instruction_counter := instruction_counter + 1;
+                END IF;
             END LOOP;
-	    file_close(file_ptr);
+            file_close(file_ptr);
         END IF;
     END PROCESS;
 

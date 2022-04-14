@@ -1,29 +1,29 @@
-library ieee;
-use ieee.std_logic_1164.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
 
-entity PC is
-	port (
-		pc_clk    : in std_logic;
-		pc_enable : in std_logic;
-		pc_reset  : in std_logic;
-		pc_in     : in std_logic_vector(31 downto 0);
-		pc_out    : out std_logic_vector(31 downto 0)
+ENTITY PC IS
+	PORT (
+		pc_clk : IN STD_LOGIC;
+		pc_enable : IN STD_LOGIC;
+		pc_reset : IN STD_LOGIC;
+		pc_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		pc_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 	);
-end entity ;
+END ENTITY;
 
-architecture arch of PC is
-	signal internal_pc : std_logic_vector(31 downto 0);
+ARCHITECTURE arch OF PC IS
+	SIGNAL internal_pc : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-begin
-	program_counter : process(pc_clk)
-		begin
-			if pc_reset = '1' then
-				internal_pc <= (others => '0');
-				  
-			elsif rising_edge(pc_clk) and pc_enable = '1' then
-				internal_pc <= pc_in;
-			end if;
-		end process;
-		
+BEGIN
+	program_counter : PROCESS (pc_clk)
+	BEGIN
+		IF pc_reset = '1' THEN
+			internal_pc <= (OTHERS => '0');
+
+		ELSIF rising_edge(pc_clk) AND pc_enable = '1' THEN
+			internal_pc <= pc_in;
+		END IF;
+	END PROCESS;
+
 	pc_out <= internal_pc;
-end architecture ;
+END ARCHITECTURE;

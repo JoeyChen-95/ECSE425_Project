@@ -80,7 +80,7 @@ BEGIN
     branch_address_internal <= rs_out_internal WHEN branch_ri_control = '1' ELSE
         imm_output_internal;
     branch_address <= branch_address_internal WHEN branch_taken = '1' ELSE
-		pc_in;
+        pc_in;
 
     -- Wire output to internal signals (registers, immediate values)
     ID_Rs_out <= rs_out_internal;
@@ -105,7 +105,7 @@ BEGIN
 
         IF (rising_edge(clock)) THEN
             IF (stall = '1') THEN
-            
+
             ELSE
                 -- If not stall.
                 -- We shall first extract relevant information
@@ -156,7 +156,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "011000") THEN
                         -- MULT
                         ID_Op_code <= "000011";
@@ -169,7 +169,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "011010") THEN
                         -- DIV
                         ID_Op_code <= "000100";
@@ -182,7 +182,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "101010") THEN
                         -- SLT
                         ID_Op_code <= "000101";
@@ -195,7 +195,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "100100") THEN
                         -- AND
                         ID_Op_code <= "000111";
@@ -208,7 +208,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "100101") THEN
                         -- OR
                         ID_Op_code <= "001000";
@@ -221,7 +221,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "100111") THEN
                         -- NOR
                         ID_Op_code <= "001001";
@@ -234,7 +234,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "100110") THEN
                         --XOR
                         ID_Op_code <= "001010";
@@ -247,7 +247,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "010000") THEN
                         -- MFHI
                         ID_Op_code <= "001110";
@@ -260,7 +260,7 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "010010") THEN
                         -- MFLO
                         ID_Op_code <= "001111";
@@ -273,11 +273,11 @@ BEGIN
                         imm_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "000000") THEN
                         -- SLL
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(shamt),
-                        immediate_out_internal'length));
+                            immediate_out_internal'length));
                         ID_Op_code <= "010001";
                         branch_ctl <= "101";
                         branch_ri_control <= '0';
@@ -287,11 +287,11 @@ BEGIN
                         imm_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "000010") THEN
                         -- SRL
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(shamt),
-                        immediate_out_internal'length));
+                            immediate_out_internal'length));
                         ID_Op_code <= "010010";
                         branch_ctl <= "101";
                         branch_ri_control <= '0';
@@ -301,11 +301,11 @@ BEGIN
                         imm_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "000011") THEN
                         -- SRA
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(shamt),
-                        immediate_out_internal'length));
+                            immediate_out_internal'length));
                         ID_Op_code <= "010011";
                         branch_ctl <= "101";
                         branch_ri_control <= '0';
@@ -315,7 +315,7 @@ BEGIN
                         imm_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (funct = "001000") THEN
                         -- JR
                         branch_ctl <= "010";
@@ -332,7 +332,7 @@ BEGIN
                         store_enable <= '0';
                         load_enable <= '0';
                     END IF;
-                    
+
                 ELSIF (opcode = "000010") THEN
                     -- J
 
@@ -345,7 +345,7 @@ BEGIN
                     -- J-specific signals.
                     branch_ctl <= "010";
                     imm_output_internal <= to_stdlogicvector(to_bitvector
-                    (STD_LOGIC_VECTOR(resize(signed(addr), imm_output_internal'length))) SLL 2);
+                        (STD_LOGIC_VECTOR(resize(signed(addr), imm_output_internal'length))) SLL 2);
                     branch_ri_control <= '0';
                     link_enable <= '0';
                     link_val <= (OTHERS => '0');
@@ -368,7 +368,7 @@ BEGIN
                     -- J-specific signals.
                     branch_ctl <= "010";
                     imm_output_internal <= to_stdlogicvector(to_bitvector
-                    (STD_LOGIC_VECTOR(resize(signed(addr), imm_output_internal'length))) SLL 2);
+                        (STD_LOGIC_VECTOR(resize(signed(addr), imm_output_internal'length))) SLL 2);
                     branch_ri_control <= '0';
                     link_enable <= '1';
                     link_val <= pc_in;
@@ -394,15 +394,15 @@ BEGIN
 
                         -- J-specific signals.
                         branch_ctl <= "101";
-                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), 
-                        imm_output_internal'length));
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm),
+                            imm_output_internal'length));
                         branch_ri_control <= '1';
 
                         -- Set common signals.
                         WB_enable <= '0';
                         store_enable <= '1';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "010100") THEN
                         -- LW
                         Rd <= rt;
@@ -410,8 +410,8 @@ BEGIN
 
                         -- J-specific signals.
                         branch_ctl <= "101";
-                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), 
-                        imm_output_internal'length));
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm),
+                            imm_output_internal'length));
                         branch_ri_control <= '1';
 
                         -- Set common signals.
@@ -428,10 +428,10 @@ BEGIN
                         branch_ctl <= "000";
                         IF (signed(imm) >= 0) THEN
                             imm_output_internal <= to_std_logic_vector
-                            (unsigned(pc_in) + unsigned(imm) * 4);
+                                (unsigned(pc_in) + unsigned(imm) * 4);
                         ELSE
                             imm_output_internal <= to_std_logic_vector
-                            (unsigned(pc_in) - unsigned(imm) * 4);
+                                (unsigned(pc_in) - unsigned(imm) * 4);
                         END IF
                         branch_ri_control <= '0';
 
@@ -439,7 +439,7 @@ BEGIN
                         WB_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "000101") THEN
                         -- BNE
                         Rd <= (OTHERS => '0');
@@ -449,10 +449,10 @@ BEGIN
                         branch_ctl <= "001";
                         IF (signed(imm) >= 0) THEN
                             imm_output_internal <= to_std_logic_vector
-                            (unsigned(pc_in) + unsigned(imm) * 4);
+                                (unsigned(pc_in) + unsigned(imm) * 4);
                         ELSE
                             imm_output_internal <= to_std_logic_vector
-                            (unsigned(pc_in) - unsigned(imm) * 4);
+                                (unsigned(pc_in) - unsigned(imm) * 4);
                         END IF
                         branch_ri_control <= '0';
 
@@ -460,7 +460,7 @@ BEGIN
                         WB_enable <= '0';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "001000") THEN
                         -- ADDI
                         Rd <= rt;
@@ -468,15 +468,15 @@ BEGIN
 
                         -- J-specific signals.
                         branch_ctl <= "101";
-                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm), 
-                        imm_output_internal'length));
+                        imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(imm),
+                            imm_output_internal'length));
                         branch_ri_control <= '0';
 
                         -- Set common signals.
                         WB_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "001010") THEN
                         -- SLTI
                         Rd <= rt;
@@ -485,14 +485,14 @@ BEGIN
                         -- J-specific signals.
                         branch_ctl <= "101";
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm),
-                        imm_output_internal'length));
+                            imm_output_internal'length));
                         branch_ri_control <= '0';
 
                         -- Set common signals.
                         WB_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "001100") THEN
                         -- ANDI
                         Rd <= rt;
@@ -501,14 +501,14 @@ BEGIN
                         -- J-specific signals.
                         branch_ctl <= "101";
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm),
-                        imm_output_internal'length));
+                            imm_output_internal'length));
                         branch_ri_control <= '0';
 
                         -- Set common signals.
                         WB_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "001101") THEN
                         -- ORI
                         Rd <= rt;
@@ -517,14 +517,14 @@ BEGIN
                         -- J-specific signals.
                         branch_ctl <= "101";
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm),
-                        imm_output_internal'length));
+                            imm_output_internal'length));
                         branch_ri_control <= '0';
 
                         -- Set common signals.
                         WB_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "001110") THEN
                         -- XORI
                         Rd <= rt;
@@ -533,14 +533,14 @@ BEGIN
                         -- J-specific signals.
                         branch_ctl <= "101";
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm),
-                        imm_output_internal'length));
+                            imm_output_internal'length));
                         branch_ri_control <= '0';
 
                         -- Set common signals.
                         WB_enable <= '1';
                         store_enable <= '0';
                         load_enable <= '0';
-                        
+
                     ELSIF (opcode = "001111") THEN
                         -- LUI
                         Rd <= rt;
@@ -549,7 +549,7 @@ BEGIN
                         -- J-specific signals.
                         branch_ctl <= "101";
                         imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(imm),
-                        imm_output_internal'length));
+                            imm_output_internal'length));
                         branch_ri_control <= '0';
 
                         -- Set common signals.

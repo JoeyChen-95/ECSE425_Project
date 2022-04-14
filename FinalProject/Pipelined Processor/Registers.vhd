@@ -35,14 +35,14 @@ BEGIN
         FILE file_ptr : text;
         VARIABLE file_line : line;
         VARIABLE line_content : STRING(1 TO 32);
-        
+
     BEGIN
         IF (rising_edge(reset)) THEN
             -- We shall reset all register content to 0.
             FOR n IN 0 TO 31 LOOP
                 registers(n) <= (OTHERS => '0');
             END LOOP;
-            
+
         ELSIF (rising_edge(dump)) THEN
             -- We shall dump the register content to register.txt.
             file_open(file_ptr, REGISTER_FILE_ADDRESS, WRITE_MODE);
@@ -70,7 +70,7 @@ BEGIN
             END LOOP;
 
             file_close(file_ptr);
-            
+
         ELSIF (rising_edge(clock)) THEN
             -- We shall conduct regular register operations., i.e.,
             -- to write data from "WB" stage back to registers. Note that

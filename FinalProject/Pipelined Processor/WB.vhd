@@ -1,34 +1,34 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use ieee.numeric_std.all;
-use work.memory_arbiter_lib.all;
+LIBRARY IEEE;
+USE IEEE.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
+USE work.memory_arbiter_lib.ALL;
 
-entity WB is
-  port(
-  clk : in std_logic; -- clock
-  n_reset: in std_logic; --reset
-  --Input
-  mem_WB_enable : in std_logic;
-  mem_WB_address: in std_logic_vector (4 downto 0); -- This 31 should be modified to reg_adrsize
-  mem_WB_data: in std_logic_vector (31 downto 0);
-  
-  --Output
-  WB_enable_out: out std_logic;
-  WB_address_out: out std_logic_vector (4 downto 0); -- This 31 should be modified to reg_adrsize
-  WB_data_out: out std_logic_vector (31 downto 0); 
-  WB_forwarding_data: out std_logic_vector (31 downto 0);
+ENTITY WB IS
+  PORT (
+    clk : IN STD_LOGIC; -- clock
+    n_reset : IN STD_LOGIC; --reset
+    --Input
+    mem_WB_enable : IN STD_LOGIC;
+    mem_WB_address : IN STD_LOGIC_VECTOR (4 DOWNTO 0); -- This 31 should be modified to reg_adrsize
+    mem_WB_data : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+
+    --Output
+    WB_enable_out : OUT STD_LOGIC;
+    WB_address_out : OUT STD_LOGIC_VECTOR (4 DOWNTO 0); -- This 31 should be modified to reg_adrsize
+    WB_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+    WB_forwarding_data : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
   );
-end entity;
+END ENTITY;
 
-architecture behavior of WB is
-begin
-	process(clk,n_reset)
-    begin
-    	if(rising_edge(clk)) then
-        	WB_enable_out<=mem_WB_enable;
-            WB_address_out<=mem_WB_address;
-            WB_data_out<=mem_WB_data;
-            WB_forwarding_data<=mem_WB_data;
-         end if;
-    end process;
-end behavior;
+ARCHITECTURE behavior OF WB IS
+BEGIN
+  PROCESS (clk, n_reset)
+  BEGIN
+    IF (rising_edge(clk)) THEN
+      WB_enable_out <= mem_WB_enable;
+      WB_address_out <= mem_WB_address;
+      WB_data_out <= mem_WB_data;
+      WB_forwarding_data <= mem_WB_data;
+    END IF;
+  END PROCESS;
+END behavior;

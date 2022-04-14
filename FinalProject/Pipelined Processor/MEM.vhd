@@ -44,14 +44,14 @@ BEGIN
       memwrite => access_memory_write,
       readdata => memory_out_data
     );
-    
+
   -- Decide which data to write in
   -- If forward_select==1, write in the forwarding data.
   -- If forward_select==0 , write in the normal data in.
   WITH forward_select SELECT memory_write_data <=
     data_in_forward WHEN '1',
     in_data WHEN OTHERS;
-	
+
   out_data <= memory_out_data;
   -- Transform 32-bit address into the integer address which data_memory needs
   memory_in_address <= to_integer(unsigned(in_address));
