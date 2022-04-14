@@ -5,13 +5,13 @@ USE work.ALL;
 
 ENTITY EX IS
   PORT (
-    -- clock, reset, stall
+    -- Clock, reset
     ex_clock : IN STD_LOGIC;
     ex_stall : IN STD_LOGIC;
 
-    EX_Rs_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --Rs
-    EX_Rt_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --Rt
-    EX_immediate_value : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --immediate value
+    EX_Rs_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); -- Rs
+    EX_Rt_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); -- Rt
+    EX_immediate_value : IN STD_LOGIC_VECTOR (31 DOWNTO 0); -- immediate value
     EX_operand_code : IN STD_LOGIC_VECTOR(5 DOWNTO 0);
     EX_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0); -- result of ALU
 
@@ -20,7 +20,7 @@ ENTITY EX IS
     mem_forward_data : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --data from memory stage
 
     -- pass the data that will be used in later stages forward
-    WB_enable_in : IN STD_LOGIC; --indicate the write back enable
+    WB_enable_in : IN STD_LOGIC; -- indicate the write back enable
     WB_enable_out : OUT STD_LOGIC;
     store_enable_in : IN STD_LOGIC; -- indicate the store in mem
     store_enable_out : OUT STD_LOGIC;
@@ -81,6 +81,7 @@ ARCHITECTURE ex_architecture OF EX IS
   SIGNAL mux_4_Rs_input_2 : STD_LOGIC_VECTOR (31 DOWNTO 0);
   SIGNAL mux_4_Rs_input_3 : STD_LOGIC_VECTOR (31 DOWNTO 0);
   SIGNAL mux_4_Rs_output : STD_LOGIC_VECTOR (31 DOWNTO 0);
+
   -- for Rt mux select
   SIGNAL mux_4_Rt_select_0 : STD_LOGIC;
   SIGNAL mux_4_Rt_select_1 : STD_LOGIC;
