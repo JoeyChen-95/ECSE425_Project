@@ -45,9 +45,6 @@ ARCHITECTURE ex_architecture OF EX IS
   -- ALU component to calculate 
   COMPONENT ALU IS
     PORT (
-      -- clock, reset, stall
-      ALU_clock : IN STD_LOGIC;
-
       -- Rs,Rt,operand, output result
       ALU_RS : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
       ALU_RT_or_immediate : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- Rt or the immediate value
@@ -70,7 +67,6 @@ ARCHITECTURE ex_architecture OF EX IS
   END COMPONENT;
 
   -- ALU component signals
-  SIGNAL ALU_clock : STD_LOGIC;
   SIGNAL ALU_RS : STD_LOGIC_VECTOR(31 DOWNTO 0);
   SIGNAL ALU_RT_or_immediate : STD_LOGIC_VECTOR(31 DOWNTO 0);
   SIGNAL ALU_operand_code : STD_LOGIC_VECTOR(5 DOWNTO 0);
@@ -109,7 +105,6 @@ BEGIN
   ALU1 : ALU
   ---------Port Map of ALU ---------
   PORT MAP(
-    ALU_clock => ALU_clock,
     ALU_RS => ALU_RS,
     ALU_RT_or_immediate => ALU_RT_or_immediate,
     ALU_operand_code => ALU_operand_code,
