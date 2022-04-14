@@ -233,9 +233,17 @@ BEGIN
 
     controller_process : PROCESS (clk, reset)
 
+        -- These internal variables are used for
+        -- hazard detection.
+        VARIABLE id_reg1_internal : unsigned(5 DOWNTO 0);
+        VARIABLE id_reg2_internal : unsigned(5 DOWNTO 0);
+    BEGIN
+
         IF (falling_edge(clk)) THEN
             -- The controller only works at
             -- the falling edge of the clock.
+            
+
         END IF;
     END PROCESS
 
