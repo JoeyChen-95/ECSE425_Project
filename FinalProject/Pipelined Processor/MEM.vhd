@@ -38,7 +38,7 @@ BEGIN
             clock => clk,
             reset => reset,
             writedata => mem_in_data,
-            address => to_integer(unsigned(in_address)),
+            address => 0 when (load_enable = '0') else to_integer(unsigned(in_address)),
             memwrite => write_enable,
             readdata => memory_out_data
         );
