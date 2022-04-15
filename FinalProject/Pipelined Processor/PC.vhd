@@ -1,29 +1,39 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
 ENTITY PC IS
-	PORT (
-		pc_clk : IN STD_LOGIC;
-		pc_enable : IN STD_LOGIC;
-		pc_reset : IN STD_LOGIC;
-		pc_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-		pc_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
-	);
+    PORT (
+        -- Signals from the controller.
+        pc_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        pc_reset : IN STD_LOGIC;
+        pc_clk : IN STD_LOGIC;
+
+        -- Output signals.
+        instruction : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        pc_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+    );
 END ENTITY;
 
 ARCHITECTURE arch OF PC IS
-	SIGNAL internal_pc : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL internal_pc : STD_LOGIC_VECTOR(31 DOWNTO 0);
+--     SIGNAL clock : STD_LOGIC;
+--     SIGNAL reset : STD_LOGIC;
+    SIGNAL address : INTEGER RANGE 0 TO 1024 - 1;
+--     SIGNAL readdata : STD_LOGIC_VECTOR (31 DOWNTO 0);
 
 BEGIN
-	program_counter : PROCESS (pc_clk)
-	BEGIN
-		IF pc_reset = '1' THEN
-			internal_pc <= (OTHERS => '0');
 
-		ELSIF rising_edge(pc_clk) AND pc_enable = '1' THEN
-			internal_pc <= pc_in;
-		END IF;
-	END PROCESS;
+    IM : ENTITY work.Instruction_Memory
+        PORT MAP(
+            clock => pc_clk,
+            reset => pc_reset,
+            address => address,
+            readdata => instruction
+        );
 
-	pc_out <= internal_pc;
+    -- The PC out is always 4 + PC.
+    address <= to_integer(unsigned(pc_in));
+    pc_out <= STD_LOGIC_VECTOR(unsigned(pc_in) + 1);
+
 END ARCHITECTURE;

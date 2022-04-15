@@ -24,23 +24,7 @@ BEGIN
   -- 4. jr        (011)
   -- 5. jal       (100)
   -- 6. no branch (101)
-  BP : PROCESS (branch_ctl)
-  BEGIN
-    IF (branch_ctl = "101") THEN
-      -- no branch
-      branch_taken <= '0';
 
-    ELSIF (branch_ctl = "000") THEN
-      -- beq
-      branch_taken <= '1' WHEN reg1 = reg2 ELSE
-        '0';
-    ELSIF (branch_ctl = "001") THEN
-      -- bne
-      branch_taken <= '1' WHEN reg1 /= reg2 ELSE
-        '0';
-    ELSE
-      -- j, jr, and jal
-      branch_taken <= '1';
-    END IF;
-  END PROCESS;
+  branch_taken <= '0' WHEN branch_ctl = "101" OR (branch_ctl = "000" AND reg1 /= reg2) OR (branch_ctl = "001" AND reg1 = reg2) ELSE
+    '1';
 END ARCHITECTURE;

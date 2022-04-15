@@ -6,7 +6,6 @@ ENTITY EX_tb IS
 END EX_tb;
 
 ARCHITECTURE EX_testbench OF EX_tb IS
-
     COMPONENT EX IS
         PORT (
             -- clock, reset, stall
@@ -114,9 +113,7 @@ BEGIN
 
     test_process : PROCESS
     BEGIN
-
         --------------------------- add -------------------------------------
-
         WAIT FOR clk_period;
 
         EX_Rs_in <= x"00000001";
@@ -137,7 +134,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000008" 2ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000008" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose ex_forward_data and mem_forward_data
         WAIT FOR clk_period;
         Rs_mux_select0 <= '0';
@@ -147,7 +145,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000009" 4ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000009" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose ex_forward_data and Rt
         WAIT FOR clk_period;
         Rs_mux_select0 <= '0';
@@ -157,7 +156,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect  x"00000006" 6ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000006" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose mem_forward_data and ex_forward_data
         WAIT FOR clk_period;
         Rs_mux_select0 <= '1';
@@ -167,7 +167,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000009" 8ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000009" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose mem_forward_data and mem_forward_data
         WAIT FOR clk_period;
         Rs_mux_select0 <= '1';
@@ -177,7 +178,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"0000000a" 10ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"0000000a" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose mem_forward_data and temp_EX_Rt
         WAIT FOR clk_period;
         Rs_mux_select0 <= '1';
@@ -187,7 +189,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000007" 12ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000007" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose temp_EX_Rs and ex_forward_data
         WAIT FOR clk_period;
         Rs_mux_select0 <= '0';
@@ -197,7 +200,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000005" 14ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000005" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose temp_EX_Rs and mem_forward_data
         WAIT FOR clk_period;
         Rs_mux_select0 <= '0';
@@ -207,7 +211,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000006" 16ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000006" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose temp_EX_Rs and temp_EX_Rt
         WAIT FOR clk_period;
         Rs_mux_select0 <= '0';
@@ -217,7 +222,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000003" 18ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000003" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose 0 and ex_forward_data
         WAIT FOR clk_period;
         Rs_mux_select0 <= '1';
@@ -227,7 +233,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000004" 20ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000004" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose 0 and mem_forward_data
         WAIT FOR clk_period;
         Rs_mux_select0 <= '1';
@@ -237,7 +244,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000005" 22ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000005" REPORT "ADD FAILED" SEVERITY error;
+    
         -- choose 0 and temp_EX_Rt
         WAIT FOR clk_period;
         Rs_mux_select0 <= '1';
@@ -247,7 +255,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000002" 24ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000002" REPORT "ADD FAILED" SEVERITY error;
+    
         --------------------------- add -------------------------------------
 
         --------------------------- sub -------------------------------------
@@ -271,7 +280,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000000" 26ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000000" REPORT "SUB FAILED" SEVERITY error;
+    
         -- choose Rs and Rt
         WAIT FOR clk_period;
         Rs_mux_select0 <= '0';
@@ -281,7 +291,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000001" 28ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"00000001" REPORT "SUB FAILED" SEVERITY error;
+    
         -- choose mem_forward_data and Rt
         WAIT FOR clk_period;
         Rs_mux_select0 <= '1';
@@ -291,7 +302,8 @@ BEGIN
         WAIT FOR clk_period;
         -- expect -3, x"fffffffd" 30ns
         REPORT to_string(EX_data_out) SEVERITY note;
-
+		ASSERT EX_data_out = x"fffffffd" REPORT "SUB FAILED" SEVERITY error;
+    
         --------------------------- sub -------------------------------------
 
         --------------------------- mul -------------------------------------
@@ -317,18 +329,21 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000000" 32ns
         REPORT to_string(EX_data_out) SEVERITY note;
-        WAIT FOR clk_period;
+		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error; 		WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
+		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
         -- expect x"00000000" 34ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00010100" 36ns
+        -- expect x"00000014" 36ns
         REPORT to_string(EX_data_out) SEVERITY note;
+		ASSERT EX_data_out = x"00000014" REPORT "MUL FAILED" SEVERITY error;
+    
         WAIT FOR clk_period;
         -- mul 5*2
         EX_operand_code <= "000011";
@@ -340,19 +355,23 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000000" 38ns
         REPORT to_string(EX_data_out) SEVERITY note;
+		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
+		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
         -- expect x"00000000" 40ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00001010" 42ns
+        -- expect x"0000000A" 42ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"0000000A" REPORT "MUL FAILED" SEVERITY error;
         WAIT FOR clk_period;
+        
         -- mul 161061273 * 2290649224
         EX_operand_code <= "000011";
         -- choose mem_forward_data and immediate
@@ -363,11 +382,13 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000000" 44ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"0051EB85" REPORT "MUL FAILED" SEVERITY error;
         -- expect "00000000010100011110101110000101" 46ns
         WAIT FOR clk_period;
 
@@ -375,6 +396,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect "00010100011110101110000101001000" 48ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"147AE148" REPORT "MUL FAILED" SEVERITY error;
 
         --------------------------- mul -------------------------------------
 
@@ -401,18 +423,21 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000000" 50ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000000" REPORT "DIV FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000000" REPORT "DIV FAILED" SEVERITY error;
         -- expect x"00000000" 52ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00000100" 54ns
+        -- expect x"00000004" 54ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000004" REPORT "DIV FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         -- div 17/2
@@ -425,18 +450,21 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000000" 56ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000000" REPORT "DIV FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000001" REPORT "DIV FAILED" SEVERITY error;
         -- expect x"00000001" 58ns
         WAIT FOR clk_period;
 
         EX_operand_code <= "001111"; -- mflo
         WAIT FOR clk_period;
-        -- expect x"00001000" 60ns
+        -- expect x"00000008" 60ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000008" REPORT "DIV FAILED" SEVERITY error;
 
         --------------------------- div -------------------------------------
         --------------------------- slt -------------------------------------
@@ -462,6 +490,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000000" 62ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000000" REPORT "SLT FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         -- slt
@@ -473,6 +502,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000001" 64ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000001" REPORT "SLT FAILED" SEVERITY error;
 
         --------------------------- slt -------------------------------------
         --------------------------- and -------------------------------------
@@ -498,6 +528,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000002" 66ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000002" REPORT "AND FAILED" SEVERITY error;
 
         --------------------------- and -------------------------------------
 
@@ -524,6 +555,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000047" 68ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000047" REPORT "OR FAILED" SEVERITY error;
 
         --------------------------- or -------------------------------------
 
@@ -549,8 +581,9 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"fffffff8" 70ns
+        -- expect x"FFFFFFB8" 70ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"FFFFFFB8" REPORT "NOR FAILED" SEVERITY error;
 
         --------------------------- nor -------------------------------------
 
@@ -578,6 +611,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect "00000000000000000000000001000101" 72ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000045" REPORT "XOR FAILED" SEVERITY error;
 
         --------------------------- xor -------------------------------------
         --------------------------- lui -------------------------------------
@@ -604,6 +638,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00070000" 74ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00070000" REPORT "LUI FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         -- lui
@@ -616,6 +651,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00190000" 76ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00190000" REPORT "LUI FAILED" SEVERITY error;
 
         --------------------------- lui -------------------------------------
 
@@ -643,6 +679,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000007" 78ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000007" REPORT "SLL FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         -- sll
@@ -653,8 +690,9 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00000038" 80ns
+        -- expect x"00000070" 80ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000070" REPORT "SLL FAILED" SEVERITY error;
 
         --------------------------- sll -------------------------------------
 
@@ -673,7 +711,7 @@ BEGIN
         load_enable_in <= '0';
         Rd_in <= "00111";
 
-        -- sll
+        -- srl
         -- choose Rs Rt
         Rs_mux_select0 <= '0';
         Rs_mux_select1 <= '1';
@@ -682,9 +720,10 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000567" 82ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000567" REPORT "SRL FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
-        -- sll
+        -- srl
         EX_Rt_in <= x"00000005";
         -- choose Rs Rt
         Rs_mux_select0 <= '0';
@@ -692,8 +731,9 @@ BEGIN
         Rt_mux_select0 <= '0';
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
-        -- expect x"00070000" 84ns
+        -- expect x"0000002B" 84ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"0000002B" REPORT "SRL FAILED" SEVERITY error;
 
         --------------------------- srl -------------------------------------
 
@@ -721,6 +761,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect "00000000000000000000010101100111" 86ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00000567" REPORT "SRA FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         -- sra starts with 0 and shift 5 bits
@@ -733,6 +774,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect "00000000000000000000000000101011" 88ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"0000002B" REPORT "SRA FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         -- sra starts with 1 and shift 0 bits
@@ -746,6 +788,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect "11110000000000000000000010110101" 90ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"F00000B5" REPORT "SRA FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         -- sra starts with 1 and shift 5 bits
@@ -757,6 +800,7 @@ BEGIN
         Rt_mux_select1 <= '1';
         WAIT FOR clk_period;
         -- expect "11111111100000000000000000000101" 92ns
+        ASSERT EX_data_out = x"FF800005" REPORT "SRA FAILED" SEVERITY error;
         REPORT to_string(EX_data_out) SEVERITY note;
 
         --------------------------- sra -------------------------------------
@@ -784,6 +828,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00001569" 94ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00001569" REPORT "LW FAILED" SEVERITY error;
 
         --------------------------- lw -------------------------------------
 
@@ -810,6 +855,7 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00002597" 96ns
         REPORT to_string(EX_data_out) SEVERITY note;
+        ASSERT EX_data_out = x"00002597" REPORT "SW FAILED" SEVERITY error;
 
         --------------------------- sw -------------------------------------
 
@@ -855,7 +901,7 @@ BEGIN
         REPORT to_string(Rd_out) SEVERITY note;
         REPORT to_string(mem_data_out) SEVERITY note;
         --------------------------- stall -------------------------------------
-
+	
+    WAIT;
     END PROCESS;
-
 END ARCHITECTURE;
