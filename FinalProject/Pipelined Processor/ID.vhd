@@ -128,14 +128,6 @@ BEGIN
             is_branch_internal := '0';
 
             IF (opcode = "000000") THEN
-                -- For R-type instructions,
-                -- fetch r1 and r2.
-                r1 <= rs;
-                r2 <= rt;
-                Rd_out <= rd;
-                link_enable <= '0';
-                link_val <= (OTHERS => '0');
-
                 -- For each of the instruction
                 -- below, we only need to
                 -- assign ID_Op_code and WB_enable.
@@ -286,6 +278,7 @@ BEGIN
                     -- SLL
                     imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(shamt),
                         imm_output_internal'length));
+                    rs := rt;
                     ID_Op_code <= "010001";
                     branch_ctl <= "101";
                     branch_ri_control <= '0';
@@ -300,6 +293,7 @@ BEGIN
                     -- SRL
                     imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(shamt),
                         imm_output_internal'length));
+                    rs := rt;
                     ID_Op_code <= "010010";
                     branch_ctl <= "101";
                     branch_ri_control <= '0';
@@ -314,6 +308,7 @@ BEGIN
                     -- SRA
                     imm_output_internal <= STD_LOGIC_VECTOR(resize(signed(shamt),
                         imm_output_internal'length));
+                    rs := rt;
                     ID_Op_code <= "010011";
                     branch_ctl <= "101";
                     branch_ri_control <= '0';
@@ -341,6 +336,14 @@ BEGIN
                     store_enable <= '0';
                     load_enable <= '0';
                 END IF;
+
+                -- For R-type instructions,
+                -- fetch r1 and r2.
+                r1 <= rs;
+                r2 <= rt;
+                Rd_out <= rd;
+                link_enable <= '0';
+                link_val <= (OTHERS => '0');
 
             ELSIF (opcode = "000010") THEN
                 -- J

@@ -392,11 +392,11 @@ BEGIN
                     ) THEN
                     -- There is forwarding.
                     IF (id_out_rt_idx = ex_out_rd) THEN
-                        -- Forwarding from MEM.
+                        -- Forwarding from EX.
                         ex_control_rt_select_forwarding <= '1';
                         ex_control_rt_select_forwarding_mem <= '0';
                     ELSIF (id_out_rt_idx = mem_out_rd) THEN
-                        -- Forwarding from WB.
+                        -- Forwarding from MEM.
                         ex_control_rt_select_forwarding <= '1';
                         ex_control_rt_select_forwarding_mem <= '1';
                     END IF;
@@ -416,11 +416,11 @@ BEGIN
                     ) THEN
                     -- There is forwarding.
                     IF (id_out_rs_idx = ex_out_rd) THEN
-                        -- Forwarding from MEM.
+                        -- Forwarding from EX.
                         ex_control_rs_select_forwarding <= '1';
                         ex_control_rs_select_forwarding_mem <= '0';
                     ELSIF (id_out_rs_idx = mem_out_rd) THEN
-                        -- Forwarding from WB.
+                        -- Forwarding from MEM.
                         ex_control_rs_select_forwarding <= '1';
                         ex_control_rs_select_forwarding_mem <= '1';
                     END IF;
