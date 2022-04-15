@@ -413,12 +413,7 @@ BEGIN
                 -- MEM to WB
                 wb_in_wb_enable <= mem_out_wb_enable;
                 wb_in_wb_rd <= mem_out_rd;
-                wb_in_wb_data <= mem_out_data;
-
-                -- WB to ID
-                wb_write_enable  <= wb_out_enable;
-                wb_write_address <= wb_out_rd;
-                wb_data  <= wb_out_data;    
+                wb_in_wb_data <= mem_out_data; 
 
 
             end if;
