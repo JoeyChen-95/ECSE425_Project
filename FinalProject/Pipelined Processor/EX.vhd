@@ -85,8 +85,8 @@ BEGIN
   ---------Port Map of Mux_4 ---------
   Mux_4_Rs : mux_4
   PORT MAP(
-    mux_4_select_0 => rs_select_forwarding,
-    mux_4_select_1 => rs_select_forwarding_mem,
+    mux_4_select_0 => rs_select_forwarding_mem,
+    mux_4_select_1 => rs_select_forwarding,
     mux_4_input_0 => EX_Rs_in,
     mux_4_input_1 => (OTHERS => '0'),
     mux_4_input_2 => ex_forward_data,
@@ -96,8 +96,8 @@ BEGIN
 
   Mux_4_Rt : mux_4
   PORT MAP(
-    mux_4_select_0 => rt_select_forwarding,
-    mux_4_select_1 => rt_select_forwarding_mem,
+    mux_4_select_0 => rt_select_forwarding_mem,
+    mux_4_select_1 => rt_select_forwarding,
     mux_4_input_0 => preliminary_rt_or_immediate,
     mux_4_input_1 => (OTHERS => '0'),
     mux_4_input_2 => ex_forward_data,

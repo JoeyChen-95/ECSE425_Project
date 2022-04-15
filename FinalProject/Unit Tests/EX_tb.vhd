@@ -8,38 +8,38 @@ END EX_tb;
 ARCHITECTURE EX_testbench OF EX_tb IS
     COMPONENT EX IS
         PORT (
-            -- clock, reset, stall
+            -- clock
             ex_clock : IN STD_LOGIC;
-            ex_stall : IN STD_LOGIC;
 
             EX_Rs_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --Rs
             EX_Rt_in : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --Rt
             EX_immediate_value : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --immediate value
             EX_operand_code : IN STD_LOGIC_VECTOR(5 DOWNTO 0);
-            EX_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0); -- result of ALU
+            WB_enable_in : IN STD_LOGIC; --indicate the write back enable
+            store_enable_in : IN STD_LOGIC; -- indicate the store in mem
+            load_enable_in : IN STD_LOGIC; -- indicate the load in mem
+            imm_enable : IN STD_LOGIC;
+            Rd_in : IN STD_LOGIC_VECTOR (4 DOWNTO 0); --indicate the Rd
 
             -- forwarding data
             ex_forward_data : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --data from EX stage
             mem_forward_data : IN STD_LOGIC_VECTOR (31 DOWNTO 0); --data from memory stage
 
             -- pass the data that will be used in later stages forward
-            WB_enable_in : IN STD_LOGIC; --indicate the write back enable
             WB_enable_out : OUT STD_LOGIC;
-            store_enable_in : IN STD_LOGIC; -- indicate the store in mem
             store_enable_out : OUT STD_LOGIC;
-            load_enable_in : IN STD_LOGIC; -- indicate the load in mem
             load_enable_out : OUT STD_LOGIC;
-            Rd_in : IN STD_LOGIC_VECTOR (4 DOWNTO 0); --indicate the Rd
             Rd_out : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
 
             -- mux select signal
-            Rs_mux_select0 : IN STD_LOGIC;
-            Rs_mux_select1 : IN STD_LOGIC;
-            Rt_mux_select0 : IN STD_LOGIC;
-            Rt_mux_select1 : IN STD_LOGIC;
+            Rs_select_forwarding : IN STD_LOGIC;
+            Rs_select_forwarding_mem : IN STD_LOGIC;
+            Rt_select_forwarding : IN STD_LOGIC;
+            Rt_select_forwarding_mem : IN STD_LOGIC;
 
-            -- other signal
-            mem_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0)
+            -- Other signal
+            mem_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+            EX_data_out : OUT STD_LOGIC_VECTOR (31 DOWNTO 0) -- result of ALU
         );
     END COMPONENT;
 
@@ -47,13 +47,13 @@ ARCHITECTURE EX_testbench OF EX_tb IS
     -- clock, reset, stall
     SIGNAL clk : STD_LOGIC := '0';
     CONSTANT clk_period : TIME := 1 ns;
-    SIGNAL ex_stall : STD_LOGIC := '0';
     -- Rs, Rt, immediate, operand, and data out
     SIGNAL EX_Rs_in : STD_LOGIC_VECTOR (31 DOWNTO 0);
     SIGNAL EX_Rt_in : STD_LOGIC_VECTOR (31 DOWNTO 0);
     SIGNAL EX_immediate_value : STD_LOGIC_VECTOR (31 DOWNTO 0);
     SIGNAL EX_operand_code : STD_LOGIC_VECTOR (5 DOWNTO 0);
     SIGNAL EX_data_out : STD_LOGIC_VECTOR (31 DOWNTO 0);
+    SIGNAL imm_enable : STD_LOGIC;
     -- forwarding data
     SIGNAL ex_forward_data : STD_LOGIC_VECTOR (31 DOWNTO 0);
     SIGNAL mem_forward_data : STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -67,10 +67,10 @@ ARCHITECTURE EX_testbench OF EX_tb IS
     SIGNAL Rd_in : STD_LOGIC_VECTOR (4 DOWNTO 0); --indicate the Rd
     SIGNAL Rd_out : STD_LOGIC_VECTOR (4 DOWNTO 0);
     -- mux select signal
-    SIGNAL Rs_mux_select0 : STD_LOGIC;
-    SIGNAL Rs_mux_select1 : STD_LOGIC;
-    SIGNAL Rt_mux_select0 : STD_LOGIC;
-    SIGNAL Rt_mux_select1 : STD_LOGIC;
+    SIGNAL Rs_select_forwarding : STD_LOGIC;
+    SIGNAL Rs_select_forwarding_mem : STD_LOGIC;
+    SIGNAL Rt_select_forwarding : STD_LOGIC;
+    SIGNAL Rt_select_forwarding_mem : STD_LOGIC;
     -- other signal
     SIGNAL mem_data_out : STD_LOGIC_VECTOR (31 DOWNTO 0);
 
@@ -80,9 +80,9 @@ BEGIN
     ---------Port Map of EX ---------
     PORT MAP(
         ex_clock => clk,
-        ex_stall => ex_stall,
         EX_Rs_in => EX_Rs_in,
         EX_Rt_in => EX_Rt_in,
+        imm_enable => imm_enable,
         EX_immediate_value => EX_immediate_value,
         EX_operand_code => EX_operand_code,
         EX_data_out => EX_data_out,
@@ -96,10 +96,10 @@ BEGIN
         load_enable_out => load_enable_out,
         Rd_in => Rd_in,
         Rd_out => Rd_out,
-        Rs_mux_select0 => Rs_mux_select0,
-        Rs_mux_select1 => Rs_mux_select1,
-        Rt_mux_select0 => Rt_mux_select0,
-        Rt_mux_select1 => Rt_mux_select1,
+        Rs_select_forwarding => Rs_select_forwarding,
+        Rs_select_forwarding_mem => Rs_select_forwarding_mem,
+        Rt_select_forwarding => Rt_select_forwarding,
+        Rt_select_forwarding_mem => Rt_select_forwarding_mem,
         mem_data_out => mem_data_out
     );
 
@@ -117,6 +117,7 @@ BEGIN
         WAIT FOR clk_period;
 
         EX_Rs_in <= x"00000001";
+        imm_enable <= '0';
         EX_Rt_in <= x"00000002";
         EX_immediate_value <= x"00000003";
         EX_operand_code <= "000000";
@@ -127,136 +128,136 @@ BEGIN
         load_enable_in <= '0';
         Rd_in <= "00111";
         -- choose ex_forward_data and ex_forward_data
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000008" 2ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000008" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000008" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose ex_forward_data and mem_forward_data
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '1';
         WAIT FOR clk_period;
         -- expect x"00000009" 4ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000009" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000009" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose ex_forward_data and Rt
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect  x"00000006" 6ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000006" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000006" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose mem_forward_data and ex_forward_data
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '1';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000009" 8ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000009" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000009" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose mem_forward_data and mem_forward_data
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '1';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '1';
         WAIT FOR clk_period;
         -- expect x"0000000a" 10ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"0000000a" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"0000000a" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose mem_forward_data and temp_EX_Rt
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '1';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000007" 12ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000007" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000007" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose temp_EX_Rs and ex_forward_data
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000005" 14ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000005" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000005" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose temp_EX_Rs and mem_forward_data
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '1';
         WAIT FOR clk_period;
         -- expect x"00000006" 16ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000006" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000006" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose temp_EX_Rs and temp_EX_Rt
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000003" 18ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000003" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000003" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose 0 and ex_forward_data
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '1';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000004" 20ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000004" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000004" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose 0 and mem_forward_data
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '1';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '1';
         WAIT FOR clk_period;
         -- expect x"00000005" 22ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000005" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000005" REPORT "ADD FAILED" SEVERITY error;
+
         -- choose 0 and temp_EX_Rt
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '1';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000002" 24ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000002" REPORT "ADD FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000002" REPORT "ADD FAILED" SEVERITY error;
+
         --------------------------- add -------------------------------------
 
         --------------------------- sub -------------------------------------
@@ -273,37 +274,37 @@ BEGIN
         load_enable_in <= '0';
         Rd_in <= "00111";
         -- choose ex_forward_data and ex_forward_data
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000000" 26ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000000" REPORT "SUB FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000000" REPORT "SUB FAILED" SEVERITY error;
+
         -- choose Rs and Rt
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000001" 28ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000001" REPORT "SUB FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000001" REPORT "SUB FAILED" SEVERITY error;
+
         -- choose mem_forward_data and Rt
         WAIT FOR clk_period;
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '1';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect -3, x"fffffffd" 30ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"fffffffd" REPORT "SUB FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"fffffffd" REPORT "SUB FAILED" SEVERITY error;
+
         --------------------------- sub -------------------------------------
 
         --------------------------- mul -------------------------------------
@@ -322,19 +323,20 @@ BEGIN
 
         -- mul 5*4
         -- choose Rs and Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000000" 32ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error; 		WAIT FOR clk_period;
+        ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
+        WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
+        ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
         -- expect x"00000000" 34ns
         WAIT FOR clk_period;
 
@@ -342,26 +344,26 @@ BEGIN
         WAIT FOR clk_period;
         -- expect x"00000014" 36ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000014" REPORT "MUL FAILED" SEVERITY error;
-    
+        ASSERT EX_data_out = x"00000014" REPORT "MUL FAILED" SEVERITY error;
+
         WAIT FOR clk_period;
         -- mul 5*2
         EX_operand_code <= "000011";
         -- choose Rs and ex_forward_data
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000000" 38ns
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
+        ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
         WAIT FOR clk_period;
 
         EX_operand_code <= "001110"; -- mfhi
         WAIT FOR clk_period;
         REPORT to_string(EX_data_out) SEVERITY note;
-		ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
+        ASSERT EX_data_out = x"00000000" REPORT "MUL FAILED" SEVERITY error;
         -- expect x"00000000" 40ns
         WAIT FOR clk_period;
 
@@ -371,14 +373,15 @@ BEGIN
         REPORT to_string(EX_data_out) SEVERITY note;
         ASSERT EX_data_out = x"0000000A" REPORT "MUL FAILED" SEVERITY error;
         WAIT FOR clk_period;
-        
+
         -- mul 161061273 * 2290649224
         EX_operand_code <= "000011";
         -- choose mem_forward_data and immediate
-        Rs_mux_select0 <= '1';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '1';
+        imm_enable <= '1', '0' AFTER 4 * clk_period;
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000000" 44ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -397,6 +400,7 @@ BEGIN
         -- expect "00010100011110101110000101001000" 48ns
         REPORT to_string(EX_data_out) SEVERITY note;
         ASSERT EX_data_out = x"147AE148" REPORT "MUL FAILED" SEVERITY error;
+        WAIT FOR 4 * clk_period;
 
         --------------------------- mul -------------------------------------
 
@@ -416,10 +420,10 @@ BEGIN
 
         -- div
         -- choose Rs and Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000000" 50ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -443,10 +447,10 @@ BEGIN
         -- div 17/2
         EX_operand_code <= "000100";
         -- choose ex_forward_data and EX_Rt_in
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '1';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000000" 56ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -483,10 +487,10 @@ BEGIN
 
         -- slt
         -- choose Rs and Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000000" 62ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -495,10 +499,10 @@ BEGIN
 
         -- slt
         -- choose Rs and mem_forward_data
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '0';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '1';
+        Rt_select_forwarding_mem <= '1';
         WAIT FOR clk_period;
         -- expect x"00000001" 64ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -521,10 +525,10 @@ BEGIN
 
         -- and
         -- choose Rs and Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000002" 66ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -548,10 +552,10 @@ BEGIN
 
         -- or
         -- choose Rs and Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000047" 68ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -576,10 +580,10 @@ BEGIN
 
         -- nor
         -- choose Rs and Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"FFFFFFB8" 70ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -604,10 +608,10 @@ BEGIN
 
         -- xor
         -- choose Rs and Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect "00000000000000000000000001000101" 72ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -628,13 +632,14 @@ BEGIN
         store_enable_in <= '0';
         load_enable_in <= '0';
         Rd_in <= "00111";
+        imm_enable <= '1';
 
         -- lui
         -- choose immediate 00000007
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00070000" 74ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -644,14 +649,15 @@ BEGIN
         -- lui
         EX_immediate_value <= x"07000019";
         -- choose immediate 07000019
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '0';
-        Rt_mux_select0 <= '1';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00190000" 76ns
         REPORT to_string(EX_data_out) SEVERITY note;
         ASSERT EX_data_out = x"00190000" REPORT "LUI FAILED" SEVERITY error;
+        imm_enable <= '0';
 
         --------------------------- lui -------------------------------------
 
@@ -669,13 +675,14 @@ BEGIN
         store_enable_in <= '0';
         load_enable_in <= '0';
         Rd_in <= "00111";
+        imm_enable <= '1';
 
         -- sll
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000007" 78ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -685,14 +692,15 @@ BEGIN
         -- sll
         EX_Rt_in <= x"00000004";
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000070" 80ns
         REPORT to_string(EX_data_out) SEVERITY note;
         ASSERT EX_data_out = x"00000070" REPORT "SLL FAILED" SEVERITY error;
+        imm_enable <= '0';
 
         --------------------------- sll -------------------------------------
 
@@ -710,13 +718,14 @@ BEGIN
         store_enable_in <= '0';
         load_enable_in <= '0';
         Rd_in <= "00111";
+        imm_enable <= '1';
 
         -- srl
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00000567" 82ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -726,14 +735,15 @@ BEGIN
         -- srl
         EX_Rt_in <= x"00000005";
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"0000002B" 84ns
         REPORT to_string(EX_data_out) SEVERITY note;
         ASSERT EX_data_out = x"0000002B" REPORT "SRL FAILED" SEVERITY error;
+        imm_enable <= '0';
 
         --------------------------- srl -------------------------------------
 
@@ -751,13 +761,14 @@ BEGIN
         store_enable_in <= '0';
         load_enable_in <= '0';
         Rd_in <= "00111";
+        imm_enable <= '1';
 
         -- sra starts with 0 and shift by 0 bit
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect "00000000000000000000010101100111" 86ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -767,10 +778,10 @@ BEGIN
         -- sra starts with 0 and shift 5 bits
         EX_Rt_in <= x"00000005";
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect "00000000000000000000000000101011" 88ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -781,10 +792,10 @@ BEGIN
         EX_Rs_in <= x"f00000b5";
         EX_Rt_in <= x"00000000";
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect "11110000000000000000000010110101" 90ns
         REPORT to_string(EX_data_out) SEVERITY note;
@@ -794,14 +805,15 @@ BEGIN
         -- sra starts with 1 and shift 5 bits
         EX_Rt_in <= x"00000005";
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect "11111111100000000000000000000101" 92ns
         ASSERT EX_data_out = x"FF800005" REPORT "SRA FAILED" SEVERITY error;
         REPORT to_string(EX_data_out) SEVERITY note;
+        imm_enable <= '0';
 
         --------------------------- sra -------------------------------------
 
@@ -818,17 +830,19 @@ BEGIN
         store_enable_in <= '0';
         load_enable_in <= '0';
         Rd_in <= "00111";
+        imm_enable <= '1';
 
         -- load word
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00001569" 94ns
         REPORT to_string(EX_data_out) SEVERITY note;
         ASSERT EX_data_out = x"00001569" REPORT "LW FAILED" SEVERITY error;
+        imm_enable <= '0';
 
         --------------------------- lw -------------------------------------
 
@@ -845,63 +859,22 @@ BEGIN
         store_enable_in <= '0';
         load_enable_in <= '0';
         Rd_in <= "00111";
+        imm_enable <= '1';
 
         -- load word
         -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
+        Rs_select_forwarding <= '0';
+        Rs_select_forwarding_mem <= '0';
+        Rt_select_forwarding <= '0';
+        Rt_select_forwarding_mem <= '0';
         WAIT FOR clk_period;
         -- expect x"00002597" 96ns
         REPORT to_string(EX_data_out) SEVERITY note;
         ASSERT EX_data_out = x"00002597" REPORT "SW FAILED" SEVERITY error;
+        imm_enable <= '0';
 
         --------------------------- sw -------------------------------------
 
-        --------------------------- stall -------------------------------------
-
-        WAIT FOR clk_period;
-
-        EX_Rs_in <= x"00000567";
-        EX_Rt_in <= x"00002030";
-        EX_immediate_value <= x"00000007";
-        EX_operand_code <= "010101";
-        ex_forward_data <= x"00000011";
-        mem_forward_data <= x"00000020";
-        WB_enable_in <= '1';
-        store_enable_in <= '0';
-        load_enable_in <= '1';
-        Rd_in <= "00111";
-
-        ex_stall <= '1';
-
-        -- load word
-        -- choose Rs Rt
-        Rs_mux_select0 <= '0';
-        Rs_mux_select1 <= '1';
-        Rt_mux_select0 <= '0';
-        Rt_mux_select1 <= '1';
-        WAIT FOR clk_period;
-        -- 98ns
-        REPORT to_string(EX_data_out) SEVERITY note;
-        REPORT to_string(WB_enable_out) SEVERITY note;
-        REPORT to_string(store_enable_out) SEVERITY note;
-        REPORT to_string(load_enable_out) SEVERITY note;
-        REPORT to_string(Rd_out) SEVERITY note;
-        REPORT to_string(mem_data_out) SEVERITY note;
-
-        ex_stall <= '0';
-        WAIT FOR clk_period;
-        -- 100ns
-        REPORT to_string(EX_data_out) SEVERITY note;
-        REPORT to_string(WB_enable_out) SEVERITY note;
-        REPORT to_string(store_enable_out) SEVERITY note;
-        REPORT to_string(load_enable_out) SEVERITY note;
-        REPORT to_string(Rd_out) SEVERITY note;
-        REPORT to_string(mem_data_out) SEVERITY note;
-        --------------------------- stall -------------------------------------
-	
-    WAIT;
+        WAIT;
     END PROCESS;
 END ARCHITECTURE;
