@@ -107,7 +107,7 @@ BEGIN
 
   -- Set the preliminary Rt/imm values to
   -- go into the mux.
-  preliminary_rt_or_immediate <= EX_Rt_in WHEN imm_enable = '1' ELSE
+  preliminary_rt_or_immediate <= EX_Rt_in WHEN imm_enable = '0' ELSE
     EX_immediate_value;
 
   -- Pass these memory-related signals
