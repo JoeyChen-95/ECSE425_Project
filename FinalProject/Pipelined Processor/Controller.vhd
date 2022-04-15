@@ -275,7 +275,7 @@ BEGIN
 
             
         end if;
-        
+
         IF (falling_edge(clk)) THEN
             -- The controller only works at
             -- the falling edge of the clock.
@@ -296,11 +296,28 @@ BEGIN
                 ex_control_rt_select_forwarding_mem <= '0';
                 ex_in_opcode <= "000000";
 
+                ex_in_wb_enable<= (OTHERS => '0');
+                ex_in_store_enable<= (OTHERS => '0');
+                ex_in_load_enable<= (OTHERS => '0');
+                ex_in_imm_enable<= (OTHERS => '0');
+
             elsif (id_out_branch_taken = '1') then
                 -- branch taken, jump to the calculated branch address
                 pc_in_pc  <= id_out_branch_address;            
                 id_in_instruction<= (OTHERS => '0');
+                
+                ex_in_rs <= (OTHERS => '0');
+                ex_in_rt <= (OTHERS => '0');
+                ex_control_rs_select_forwarding <= '0';
+                ex_control_rs_select_forwarding_mem <='0';
+                ex_control_rt_select_forwarding <= '0';
+                ex_control_rt_select_forwarding_mem <= '0';
+                ex_in_opcode <= "000000";
 
+                ex_in_wb_enable<= (OTHERS => '0');
+                ex_in_store_enable<= (OTHERS => '0');
+                ex_in_load_enable<= (OTHERS => '0');
+                ex_in_imm_enable<= (OTHERS => '0');
 
             else
                 -- pass signals to next stage
