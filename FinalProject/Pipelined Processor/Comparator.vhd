@@ -25,6 +25,6 @@ BEGIN
   -- 5. jal       (100)
   -- 6. no branch (101)
 
-  branch_taken <= '0' WHEN branch_ctl = "101" OR (branch_ctl = "000" AND reg /= reg2) OR (branch_ctl = "001" AND reg1 = reg2) ELSE
+  branch_taken <= '0' WHEN branch_ctl = "101" OR (branch_ctl = "000" AND reg1 /= reg2) OR (branch_ctl = "001" AND reg1 = reg2) ELSE
     '1';
 END ARCHITECTURE;
