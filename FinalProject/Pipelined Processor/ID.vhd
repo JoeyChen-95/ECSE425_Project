@@ -21,6 +21,7 @@ ENTITY ID IS
         -- and hazard detection
         rs_idx : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
         rt_idx : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
+        is_branch : OUT STD_LOGIC;
 
         -- Signals passed to the fetch stage due to branching.
         branch_taken : OUT STD_LOGIC;
@@ -108,6 +109,7 @@ BEGIN
         VARIABLE funct : STD_LOGIC_VECTOR(5 DOWNTO 0); -- For R instructions only.
         VARIABLE imm : STD_LOGIC_VECTOR(15 DOWNTO 0); -- For I instructions only.
         VARIABLE addr : STD_LOGIC_VECTOR(25 DOWNTO 0); -- For J instructions only.
+        VARIABLE is_branch_internal : STD_LOGIC;
 
     BEGIN
 
@@ -123,6 +125,7 @@ BEGIN
             funct := instruction(5 DOWNTO 0);
             imm := instruction(15 DOWNTO 0);
             addr := instruction(25 DOWNTO 0);
+            is_branch_internal := '0';
 
             IF (opcode = "000000") THEN
                 -- For R-type instructions,
@@ -326,6 +329,7 @@ BEGIN
                     branch_ctl <= "010";
                     imm_output_internal <= (OTHERS => '0');
                     branch_ri_control <= '1';
+                    is_branch_internal := '1';
 
                     -- Output fake add instructions,
                     -- whose result will not be saved.
@@ -346,6 +350,7 @@ BEGIN
                 r2 <= (OTHERS => '0');
                 Rd_out <= (OTHERS => '0');
                 ID_Op_code <= (OTHERS => '0');
+                is_branch_internal := '1';
 
                 -- J-specific signals.
                 branch_ctl <= "010";
@@ -368,6 +373,7 @@ BEGIN
                 r2 <= (OTHERS => '0');
                 Rd_out <= (OTHERS => '0');
                 ID_Op_code <= (OTHERS => '0');
+                is_branch_internal := '1';
 
                 -- J-specific signals.
                 branch_ctl <= "010";
@@ -426,6 +432,7 @@ BEGIN
                     -- BEQ
                     Rd_out <= (OTHERS => '0');
                     ID_Op_code <= (OTHERS => '0');
+                    is_branch_internal := '1';
 
                     -- J-specific signals.
                     branch_ctl <= "000";
@@ -441,6 +448,7 @@ BEGIN
                     -- BNE
                     Rd_out <= (OTHERS => '0');
                     ID_Op_code <= (OTHERS => '0');
+                    is_branch_internal := '1';
 
                     -- J-specific signals.
                     branch_ctl <= "001";
@@ -549,6 +557,8 @@ BEGIN
                     load_enable <= '0';
                 END IF;
             END IF;
+
+            is_branch <= is_branch_internal;
         END IF;
 
     END PROCESS;

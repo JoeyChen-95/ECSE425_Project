@@ -51,6 +51,7 @@ ARCHITECTURE behavior OF Controller IS
     SIGNAL id_out_imm_enable : STD_LOGIC;
     SIGNAL id_out_load_enable : STD_LOGIC;
     SIGNAL id_out_rd : STD_LOGIC_VECTOR(4 DOWNTO 0);
+    SIGNAL id_out_is_branch : STD_LOGIC;
 
     -- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     -- ++++++++++++++++++++++    EX    +++++++++++++++++++++++++
@@ -146,6 +147,7 @@ BEGIN
 
             rs_idx => id_out_rs_idx,
             rt_idx => id_out_rt_idx,
+            is_branch => id_out_is_branch,
             branch_taken => id_out_branch_taken,
             branch_address => id_out_branch_address,
             ID_Rs_out => id_out_rs,
@@ -295,7 +297,8 @@ BEGIN
             -- forwarding is when either register
             -- at the ID stage matches the target
             -- register of the WB stage.
-            IF (wb_out_enable = '1' AND (unsigned(wb_out_rd) = id_reg1_internal OR unsigned(wb_out_rd) = id_reg2_internal)) THEN
+            IF (wb_out_enable = '1' AND (unsigned(wb_out_rd) = id_reg1_internal OR unsigned(wb_out_rd) = id_reg2_internal)) OR
+                (id_out_is_branch = '1' AND ((id_reg1_internal /= "00000" AND (id_reg1_internal = unsigned(ex_out_rd) OR id_reg1_internal = unsigned(mem_out_rd))) OR (id_reg2_internal /= "00000" AND (id_reg2_internal = unsigned(ex_out_rd) OR id_reg2_internal = unsigned(mem_out_rd))))) THEN
                 -- Stall the ID and FX stage,
                 -- that is, we keep their current
                 -- input. 
