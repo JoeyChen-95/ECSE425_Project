@@ -349,9 +349,7 @@ BEGIN
 
                 -- J-specific signals.
                 branch_ctl <= "010";
-                imm_output_internal <= to_stdlogicvector(to_bitvector
-                    (STD_LOGIC_VECTOR(resize(signed(addr),
-                    imm_output_internal'length))) SLL 2);
+                imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(addr), imm_output_internal'length));
                 branch_ri_control <= '0';
                 link_enable <= '0';
                 link_val <= (OTHERS => '0');
@@ -373,9 +371,7 @@ BEGIN
 
                 -- J-specific signals.
                 branch_ctl <= "010";
-                imm_output_internal <= to_stdlogicvector(to_bitvector
-                    (STD_LOGIC_VECTOR(resize(signed(addr),
-                    imm_output_internal'length))) SLL 2);
+                imm_output_internal <= STD_LOGIC_VECTOR(resize(unsigned(addr), imm_output_internal'length));
                 branch_ri_control <= '0';
                 link_enable <= '1';
                 link_val <= pc_in;
@@ -433,13 +429,7 @@ BEGIN
 
                     -- J-specific signals.
                     branch_ctl <= "000";
-                    IF (signed(imm) >= 0) THEN
-                        imm_output_internal <= STD_LOGIC_VECTOR
-                            (unsigned(pc_in) + unsigned(imm) * 4);
-                    ELSE
-                        imm_output_internal <= STD_LOGIC_VECTOR
-                            (unsigned(pc_in) - unsigned(imm) * 4);
-                    END IF;
+                    imm_output_internal <= STD_LOGIC_VECTOR(signed(pc_in) + signed(imm));
                     branch_ri_control <= '0';
 
                     -- Set common signals.
@@ -454,13 +444,7 @@ BEGIN
 
                     -- J-specific signals.
                     branch_ctl <= "001";
-                    IF (signed(imm) >= 0) THEN
-                        imm_output_internal <= STD_LOGIC_VECTOR
-                            (unsigned(pc_in) + unsigned(imm) * 4);
-                    ELSE
-                        imm_output_internal <= STD_LOGIC_VECTOR
-                            (unsigned(pc_in) - unsigned(imm) * 4);
-                    END IF;
+                    imm_output_internal <= STD_LOGIC_VECTOR(signed(pc_in) + signed(imm));
                     branch_ri_control <= '0';
 
                     -- Set common signals.

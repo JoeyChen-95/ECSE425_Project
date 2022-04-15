@@ -249,7 +249,7 @@ BEGIN
             -- Set all input signal to 0.
             pc_in_pc <= (OTHERS => '0');
 
-            id_in_instruction <= (OTHERS => '0');
+            id_in_instruction <= (5 => '1', OTHERS => '0');
             id_in_pc <= (OTHERS => '0');
             id_in_wb_write_enable <= '0';
             id_in_wb_write_address <= (OTHERS => '0');

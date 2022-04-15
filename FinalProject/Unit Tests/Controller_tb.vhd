@@ -34,7 +34,7 @@ BEGIN
     test_process : PROCESS
     BEGIN
         -- First we must load test programs.
-        reset <= '1';
+        reset <= '0', '1' after clk_period, '0' after 2 * clk_period;
         enable <= '0';
         dump <= '0';
         WAIT FOR 10 * clk_period;

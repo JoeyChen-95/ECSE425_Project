@@ -34,6 +34,6 @@ BEGIN
 
     -- The PC out is always 4 + PC.
     address <= to_integer(unsigned(pc_in));
-    pc_out <= STD_LOGIC_VECTOR(unsigned(pc_in) + 4);
+    pc_out <= STD_LOGIC_VECTOR(unsigned(pc_in) + 1);
 
 END ARCHITECTURE;
