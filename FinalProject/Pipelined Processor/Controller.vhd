@@ -237,12 +237,6 @@ BEGIN
         -- hazard detection.
         VARIABLE id_reg1_internal : unsigned(5 DOWNTO 0);
         VARIABLE id_reg2_internal : unsigned(5 DOWNTO 0);
-        VARIABLE opcode : STD_LOGIC_VECTOR(5 DOWNTO 0);
-        VARIABLE funct : STD_LOGIC_VECTOR(5 DOWNTO 0);
-        VARIABLE imm : STD_LOGIC_VECTOR(15 DOWNTO 0); -- For I instructions only.
-        VARIABLE addr : STD_LOGIC_VECTOR(25 DOWNTO 0); -- For J instructions only.
-        VARIABLE global_prediction : IN STD_LOGIC := '0';
-
     BEGIN
         IF (rising_edge(reset)) THEN
                 -- set all input signal to 0
@@ -310,8 +304,6 @@ BEGIN
 
             elsif (id_out_branch_taken = '1') then
                 -- branch taken, jump to the calculated branch address
-                global_prediction := '1';
-
                 pc_in_pc  <= id_out_branch_address;            
                 id_in_instruction<= (OTHERS => '0');
                 
@@ -329,27 +321,9 @@ BEGIN
                 ex_in_imm_enable<= (OTHERS => '0');
 
             else
-                if(id_out_opcode="111111") then
-                    -- this is a branch 
-                    global_prediction :='0';
-                end if;
-                
                 -- pass signals to next stage
                 --IF TO IF
-                opcode := pc_out_instruction(31 DOWNTO 26);
-                funct := pc_out_instruction(5 DOWNTO 0);
-                imm := pc_out_instruction(15 DOWNTO 0);
-                addr := pc_out_instruction(25 DOWNTO 0);
-                if (global_prediction='1' and (opcode="000100" or opcode="000101") ) then
-                    -- beq, bne
-                    pc_in_pc <=  imm+ pc_in_pc;
-                elsif(global_prediction='1' and (opcode="000010" or (opcode="000000" and funct="001000") or opcode="000011") ) then
-                    --j, jr, jal
-                    --calculate addr??
-                    pc_in_pc <= addr;
-                else
-                    pc_in_pc  <= pc_out_pc;
-                end if;
+                pc_in_pc  <= pc_out_pc;
 
                 -- IF to ID
                 id_in_instruction<= pc_out_instruction;
