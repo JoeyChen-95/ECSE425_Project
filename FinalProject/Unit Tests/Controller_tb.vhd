@@ -32,7 +32,7 @@ BEGIN
     END PROCESS;
 
     test_process : PROCESS
-
+    BEGIN
         -- First we must load test programs.
         reset <= '1';
         enable <= '0';
@@ -50,13 +50,11 @@ BEGIN
         -- Finally, when the program terminates,
         -- we shall suspend execution and output
         -- memory and registers.
-        WAIT FOR rising_edge(clk);
+        WAIT UNTIL rising_edge(clk);
         reset <= '0';
         enable <= '0';
         dump <= '1';
 
         WAIT;
-
-    BEGIN
     END PROCESS;
 END ARCHITECTURE;
