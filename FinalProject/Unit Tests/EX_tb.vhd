@@ -666,7 +666,10 @@ BEGIN
 
         EX_Rs_in <= x"00000007";
         EX_Rt_in <= x"00000000";
-        EX_immediate_value <= x"00000007";
+        EX_immediate_value <= x"00000000";
+
+        WAIT FOR clk_period;
+
         EX_operand_code <= "010001";
         ex_forward_data <= x"00000011";
         mem_forward_data <= x"00000020";
@@ -689,7 +692,7 @@ BEGIN
         WAIT FOR clk_period;
 
         -- sll
-        EX_Rt_in <= x"00000004";
+        EX_immediate_value <= x"00000004";
         -- choose Rs Rt
         Rs_select_forwarding <= '0';
         Rs_select_forwarding_mem <= '0';
@@ -709,7 +712,7 @@ BEGIN
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00000000";
-        EX_immediate_value <= x"00000007";
+        EX_immediate_value <= x"00000000";
         EX_operand_code <= "010010";
         ex_forward_data <= x"00000011";
         mem_forward_data <= x"00000020";
@@ -732,7 +735,7 @@ BEGIN
         WAIT FOR clk_period;
 
         -- srl
-        EX_Rt_in <= x"00000005";
+        EX_immediate_value <= x"00000005";
         -- choose Rs Rt
         Rs_select_forwarding <= '0';
         Rs_select_forwarding_mem <= '0';
@@ -752,7 +755,7 @@ BEGIN
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00000000";
-        EX_immediate_value <= x"00000007";
+        EX_immediate_value <= x"00000000";
         EX_operand_code <= "010011";
         ex_forward_data <= x"00000011";
         mem_forward_data <= x"00000020";
@@ -775,7 +778,7 @@ BEGIN
         WAIT FOR clk_period;
 
         -- sra starts with 0 and shift 5 bits
-        EX_Rt_in <= x"00000005";
+        EX_immediate_value <= x"00000005";
         -- choose Rs Rt
         Rs_select_forwarding <= '0';
         Rs_select_forwarding_mem <= '0';
@@ -789,7 +792,7 @@ BEGIN
 
         -- sra starts with 1 and shift 0 bits
         EX_Rs_in <= x"f00000b5";
-        EX_Rt_in <= x"00000000";
+        EX_immediate_value <= x"00000000";
         -- choose Rs Rt
         Rs_select_forwarding <= '0';
         Rs_select_forwarding_mem <= '0';
@@ -802,7 +805,7 @@ BEGIN
         WAIT FOR clk_period;
 
         -- sra starts with 1 and shift 5 bits
-        EX_Rt_in <= x"00000005";
+        EX_immediate_value <= x"00000005";
         -- choose Rs Rt
         Rs_select_forwarding <= '0';
         Rs_select_forwarding_mem <= '0';
@@ -821,7 +824,7 @@ BEGIN
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00001002";
-        EX_immediate_value <= x"00000007";
+        EX_immediate_value <= x"00001002";
         EX_operand_code <= "010100";
         ex_forward_data <= x"00000011";
         mem_forward_data <= x"00000020";
@@ -850,7 +853,7 @@ BEGIN
 
         EX_Rs_in <= x"00000567";
         EX_Rt_in <= x"00002030";
-        EX_immediate_value <= x"00000007";
+        EX_immediate_value <= x"00002030";
         EX_operand_code <= "010101";
         ex_forward_data <= x"00000011";
         mem_forward_data <= x"00000020";
