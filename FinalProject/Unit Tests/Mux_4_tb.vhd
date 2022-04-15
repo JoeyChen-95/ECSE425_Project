@@ -55,36 +55,34 @@ begin
   
   test_process : process
   begin
-  	
     mux_4_input_0 <= x"00000000";
     mux_4_input_1 <= x"00000001";
     mux_4_input_2 <= x"00000002";
     mux_4_input_3 <= x"00000003";
-    
     wait for clk_period;
+    
     mux_4_select_0 <= '0';
     mux_4_select_1 <= '0';
+    wait for clk_period;
     report to_string(mux_4_output) severity note;
     
-    wait for clk_period;
     mux_4_select_0 <= '1';
     mux_4_select_1 <= '0';
+    wait for clk_period;
     report to_string(mux_4_output) severity note;
 
-    wait for clk_period;
     mux_4_select_0 <= '0';
     mux_4_select_1 <= '1';
+    wait for clk_period;
     report to_string(mux_4_output) severity note;
     
-    wait for clk_period;
     mux_4_select_0 <= '1';
     mux_4_select_1 <= '1';
+    wait for clk_period;
     report to_string(mux_4_output) severity note;
     
-    wait for clk_period;
-
+    WAIT;
   end process;
-
 end architecture ;
   
   
