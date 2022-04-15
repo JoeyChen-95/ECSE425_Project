@@ -27,4 +27,4 @@ The assembler requires EDA Playground to run which can be found [here](https://w
 
 ### Run&Result
 1. Now we are ready to click the Run button, we can select Open EPwave to see all the waves. As we can see, all the tests work. 
-2. We can also select down files to download all the files.
+2. We can also select download files to download all the files.
