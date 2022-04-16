@@ -35,8 +35,8 @@ Our program can be viewed and run in the following link: [ECSE425 Group11 Final 
 
 ### Setting
 
-1. After opening the EDA Playground, firstly we need to select VHDL under Language & Libraries, and then enter our testbench name Controller_tb under Top Entity. 
-2. Secondly, under Tool&Simulator, we selected the version Aldec Rivera Pro 2020.4, and the run time set as 200ns(larger program may need longer run time). We need to select “Download files after run” to obtain the result files.
+1. After opening the EDA Playground, firstly we need to select VHDL under Language & Libraries, and then enter our testbench name *Controller_tb* under Top Entity. 
+2. Secondly, under Tool&Simulator, we selected the version Aldec Rivera Pro 2020.4, and the run time set as 1500ns(larger program may need longer run time). We need to select “Download files after run” to obtain the result files.
 
 ### Uploading
 1. We need to upload all the files in the "Pipelined Processor" directory. It includes all necessary VHDL componenets of the processor.
@@ -44,4 +44,5 @@ Our program can be viewed and run in the following link: [ECSE425 Group11 Final 
 
 ### Run and Result
 1. Click "Run"
-2. The results are included in a zip file. Unzipped the zip file and the results can be viewed in "memory.txt" and "register_file.txt".
+2. The results are included in a zip file. Unzipped the zip file and the results can be viewed in "memory.txt" and "register_file.txt". 
+**Warning: Turn off the auto block pop-up of your browser. Otherwise the download will fail.**
