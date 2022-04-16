@@ -25,6 +25,9 @@ The directory "Test programs" includes 2 given benchmarks.
 
 For more detail, please refer to our project report.
 
+![image](https://user-images.githubusercontent.com/96793475/163660155-737ecb05-929b-4b4a-ad57-649837b6d610.png)
+
+
 
 ## Requirement
 Since our program is run on EDA playground instead of Quartus and ModelSim, we do not submit the tcl file. EDA Playground can be accessed [here](https://www.edaplayground.com/home). To use EDA playground, the computer has to connect to the Internet.
