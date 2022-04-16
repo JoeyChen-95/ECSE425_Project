@@ -40,7 +40,7 @@ Our program can be viewed and run in the following link: [ECSE425 Group11 Final 
 
 ### Uploading
 1. We need to upload all the files in the "Pipelined Processor" directory. It includes all necessary VHDL componenets of the processor.
-2. For the testbench, upload the binary testbench code, named as "program.txt". In addition, you need to new two files named as "register_file.txt" and "memory.txt" (The test result is stored in these two files). The binary testbench code can be generated from MIPS assmebly by using the given assembler. 
+2. For the testbench, upload the binary testbench code, named as "program.txt". In addition, you need to create two empty files named as "register_file.txt" and "memory.txt" (The test result is stored in these two files). The binary testbench code can be generated from MIPS assmebly by using the given assembler. 
 
 ### Run and Result
 1. Click "Run"
