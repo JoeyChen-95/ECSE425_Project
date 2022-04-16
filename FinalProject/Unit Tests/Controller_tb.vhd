@@ -45,7 +45,7 @@ BEGIN
         reset <= '0';
         enable <= '1';
         dump <= '0';
-        WAIT FOR 10 * clk_period;
+        WAIT FOR 1000 * clk_period;
 
         -- Finally, when the program terminates,
         -- we shall suspend execution and output
