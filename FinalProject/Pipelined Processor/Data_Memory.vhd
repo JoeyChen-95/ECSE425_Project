@@ -7,7 +7,7 @@ ENTITY Data_Memory IS
 	GENERIC (
 		RAM_SIZE : INTEGER := 8192;
 		CLOCK_PERIOD : TIME := 1 ns;
-		REGISTER_FILE_ADDRESS : STRING := "memory.txt";
+		MEMORY_FILE_ADDRESS : STRING := "memory.txt";
 	);
 
 	PORT (
@@ -30,8 +30,9 @@ BEGIN
 	-- This is the main section of the SRAM model
 	mem_process : PROCESS (reset, clock, dump)
 		FILE file_ptr : text;
+		VARIABLE bin_vector : STD_LOGIC_VECTOR(31 DOWNTO 0);
 		VARIABLE file_line : line;
-		VARIABLE line_content : STD_LOGIC_VECTOR (31 DOWNTO 0);
+		VARIABLE line_content : STD_LOGIC_VECTOR (1 TO 32);
 
 	BEGIN
 		IF (rising_edge(reset)) THEN
@@ -49,10 +50,26 @@ BEGIN
 		END IF;
 
 		IF (rising_edge(dump)) THEN
-			file_open(file_ptr, REGISTER_FILE_ADDRESS, write_mode);
+			file_open(file_ptr, MEMORY_FILE_ADDRESS, WRITE_MODE);
 
-			FOR i IN 0 TO RAM_SIZE - 1 LOOP
-				line_content := ram_block(i);
+			FOR k IN 0 TO RAM_SIZE - 1 LOOP
+				-- For each register, we must translate 
+				-- its content into a string.
+				bin_vector := ram_block(k);
+				FOR j IN 0 TO 31 LOOP
+					IF (bin_vector(j) = '0') THEN
+						line_content(32 - j) := '0';
+					ELSIF (bin_vector(j) = '1') THEN
+						line_content(32 - j) := '1';
+					ELSIF (bin_vector(j) = 'U') THEN
+						line_content(32 - j) := 'U';
+					ELSIF (bin_vector(j) = 'X') THEN
+						line_content(32 - j) := 'X';
+					ELSIF (bin_vector(j) = 'Z') THEN
+						line_content(32 - j) := 'Z';
+					END IF;
+				END LOOP;
+
 				write(file_line, line_content, right, 32);
 				writeline(file_ptr, file_line);
 			END LOOP;

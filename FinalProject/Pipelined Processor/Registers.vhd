@@ -5,7 +5,7 @@ USE std.textio.ALL;
 
 ENTITY Registers IS
     GENERIC (
-        REGISTER_FILE_ADDRESS : STRING := "register.txt";
+        REGISTER_FILE_ADDRESS : STRING := "register_file.txt";
     );
     PORT (
         dump : IN STD_LOGIC;
@@ -45,6 +45,7 @@ BEGIN
 
         ELSIF (rising_edge(dump)) THEN
             -- We shall dump the register content to register.txt.
+            report "DUMPING REGISTERS.";
             file_open(file_ptr, REGISTER_FILE_ADDRESS, WRITE_MODE);
 
             FOR k IN 0 TO 31 LOOP

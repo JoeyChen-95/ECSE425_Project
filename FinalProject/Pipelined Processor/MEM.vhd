@@ -30,6 +30,7 @@ END MEM;
 ARCHITECTURE behavior OF MEM IS
 
     SIGNAL memory_out_data : STD_LOGIC_VECTOR (31 DOWNTO 0); -- the data which we read from data_memory
+    SIGNAL filtered_addr : INTEGER RANGE 0 TO 8192 - 1;
 
 BEGIN
     DM : ENTITY work.Data_Memory
@@ -38,10 +39,13 @@ BEGIN
             clock => clk,
             reset => reset,
             writedata => mem_in_data,
-            address => 0 when (load_enable = '0') else to_integer(unsigned(in_address)),
+            address => filtered_addr,
             memwrite => write_enable,
             readdata => memory_out_data
         );
+
+    filtered_addr <= 0 WHEN (load_enable = '0' AND write_enable = '0') ELSE
+        to_integer(unsigned(in_address) / 4);
 
     out_data <= memory_out_data WHEN load_enable = '1' ELSE
         in_address;
