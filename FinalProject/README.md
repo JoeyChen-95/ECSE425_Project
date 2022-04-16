@@ -17,6 +17,15 @@ Zhang, Shichang ID: 260890019
 ## Introduction
 VHDL description of a 5-stage MIPS pipeline implementing early branch resolution, forwarding, and hazard detection. This processor was implemented as a project deliverable for ECSE 425, Computer Organisation and Architecture.
 
+The directory "Pipeline Processor" includes all components of the processor.
+
+The directory "Unit Tests" includes all individual unit tests of each component.
+
+The directory "Test programs" includes 2 given benchmarks.
+
+For more detail, please refer to our project report.
+
+
 ## Requirement
 Since our program is run on EDA playground instead of Quartus and ModelSim, we do not submit the tcl file. EDA Playground can be accessed [here](https://www.edaplayground.com/home). To use EDA playground, the computer has to connect to the Internet.
 
