@@ -1,4 +1,3 @@
-
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
@@ -136,7 +135,7 @@ begin
     
     -- j, beq, jal
     -- jump
-    instruction <= "00001000000000000000000000000000";
+    instruction <= "00001000000000000000000000001100";
     wait for clk_period;
     ASSERT ID_Op_code = "000000" REPORT "JUMP FAILED" SEVERITY error;
     ASSERT WB_enable = '0' REPORT "JUMP FAILED" SEVERITY error;
@@ -145,7 +144,7 @@ begin
     ASSERT load_enable = '0' REPORT "JUMP FAILED" SEVERITY error;
     
     -- beq
-     instruction <= "00010000000000000000000000000000";
+     instruction <= "00010000000000000000000000001100";
     wait for clk_period;
     ASSERT ID_Op_code = "000000" REPORT "BEQ FAILED" SEVERITY error;
     ASSERT WB_enable = '0' REPORT "BEQ FAILED" SEVERITY error;
@@ -154,7 +153,7 @@ begin
     ASSERT load_enable = '0' REPORT "BEQ FAILED" SEVERITY error;
     
     --jal
-    instruction <= "00001100000000000000000000000000";
+    instruction <= "00001100000000000000000000001100";
     wait for clk_period;
     ASSERT ID_Op_code = "000000" REPORT "JAL FAILED" SEVERITY error;
     ASSERT WB_enable = '0' REPORT "JAL FAILED" SEVERITY error;
