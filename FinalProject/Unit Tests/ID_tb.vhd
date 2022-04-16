@@ -1,3 +1,4 @@
+
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
@@ -11,8 +12,8 @@ ARCHITECTURE ID_testbench OF ID_tb is
 
  COMPONENT ID is
     Port ( 
-        -- Clock, reset, stall
-        clock, reset, stall, dump : IN STD_LOGIC;
+        -- Clock, reset
+        clock, reset, dump : IN STD_LOGIC;
 
         -- Signals from the fetch stage.
         instruction : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -42,16 +43,16 @@ ARCHITECTURE ID_testbench OF ID_tb is
     
     -- test signals
     constant clk_period : time := 1 ns;
-    signal clock, reset, stall, dump : STD_LOGIC;
+    signal clock, reset, dump : STD_LOGIC;
         
     -- Signals from the fetch stage.
     signal instruction : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    signal pc_in : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    signal pc_in : STD_LOGIC_VECTOR(31 DOWNTO 0) := (others => '0');
 
     -- Signals from the WB stage.
-    signal wb_write_enable : STD_LOGIC;
-    signal wb_write_address : STD_LOGIC_VECTOR(4 DOWNTO 0);
-    signal wb_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    signal wb_write_enable : STD_LOGIC := '0';
+    signal wb_write_address : STD_LOGIC_VECTOR(4 DOWNTO 0) := (others => '0');
+    signal wb_data : STD_LOGIC_VECTOR(31 DOWNTO 0) := (others => '0');
 
     -- Signals passed to the fetch stage due to branching.
     signal branch_taken : STD_LOGIC;
@@ -70,7 +71,6 @@ ARCHITECTURE ID_testbench OF ID_tb is
     
     -- Internal
     SIGNAL mem_data : STD_LOGIC_VECTOR (31 DOWNTO 0);
-    SIGNAL line_counter : INTEGER := 0;
 begin 
  
   ID_test: ID 
@@ -78,7 +78,6 @@ begin
   port map(
     clock => clock,
     reset => reset,
-    stall => stall,
     dump => dump,
     instruction => instruction,
     pc_in => pc_in,
@@ -120,21 +119,11 @@ begin
     wait for clk_period;
     dump <= '0';
  reset <= '0';
-    stall <= '0';
 
  wait for clk_period;
    reset <= '1';
-
  wait for clk_period;
-   reset <= '0';
- dump <= '1';
-
- wait for clk_period;
-   dump <= '0';
     pc_in <= x"00000010";
-    wb_write_enable <= '0';
-    wb_write_address <= "00000";
-    wb_data <= x"00000010";
 
  -- Check ADD
     instruction <= "00000000001000100001100000100000";
@@ -149,8 +138,8 @@ begin
     -- jump
     instruction <= "00001000000000000000000000000000";
     wait for clk_period;
-    ASSERT ID_Op_code = "000010" REPORT "JUMP FAILED" SEVERITY error;
-    ASSERT WB_enable = '1' REPORT "JUMP FAILED" SEVERITY error;
+    ASSERT ID_Op_code = "000000" REPORT "JUMP FAILED" SEVERITY error;
+    ASSERT WB_enable = '0' REPORT "JUMP FAILED" SEVERITY error;
     ASSERT imm_enable = '0' REPORT "JUMP FAILED" SEVERITY error;
     ASSERT store_enable = '0' REPORT "JUMP FAILED" SEVERITY error;
     ASSERT load_enable = '0' REPORT "JUMP FAILED" SEVERITY error;
@@ -158,17 +147,17 @@ begin
     -- beq
      instruction <= "00010000000000000000000000000000";
     wait for clk_period;
-    ASSERT ID_Op_code = "000100" REPORT "BEQ FAILED" SEVERITY error;
-    ASSERT WB_enable = '1' REPORT "BEQ FAILED" SEVERITY error;
-    ASSERT imm_enable = '0' REPORT "BEQ FAILED" SEVERITY error;
+    ASSERT ID_Op_code = "000000" REPORT "BEQ FAILED" SEVERITY error;
+    ASSERT WB_enable = '0' REPORT "BEQ FAILED" SEVERITY error;
+    ASSERT imm_enable = '1' REPORT "BEQ FAILED" SEVERITY error;
     ASSERT store_enable = '0' REPORT "BEQ FAILED" SEVERITY error;
     ASSERT load_enable = '0' REPORT "BEQ FAILED" SEVERITY error;
     
     --jal
     instruction <= "00001100000000000000000000000000";
     wait for clk_period;
-    ASSERT ID_Op_code = "000011" REPORT "JAL FAILED" SEVERITY error;
-    ASSERT WB_enable = '1' REPORT "JAL FAILED" SEVERITY error;
+    ASSERT ID_Op_code = "000000" REPORT "JAL FAILED" SEVERITY error;
+    ASSERT WB_enable = '0' REPORT "JAL FAILED" SEVERITY error;
     ASSERT imm_enable = '0' REPORT "JAL FAILED" SEVERITY error;
     ASSERT store_enable = '0' REPORT "JAL FAILED" SEVERITY error;
     ASSERT load_enable = '0' REPORT "JAL FAILED" SEVERITY error;
