@@ -18,7 +18,7 @@ Zhang, Shichang ID: 260890019
 VHDL description of a 5-stage MIPS pipeline implementing early branch resolution, forwarding, and hazard detection. This processor was implemented as a project deliverable for ECSE 425, Computer Organisation and Architecture.
 
 ## Requirement
-The programs are run on EDA Playground to run which can be found [here](https://www.edaplayground.com/home). To use EDA playground, the computer has to connect to the Internet.
+Since our program is run on EDA playground instead of Quartus and ModelSim, we do not submit the tcl file. EDA Playground can be accessed [here](https://www.edaplayground.com/home). To use EDA playground, the computer has to connect to the Internet.
 
 Our program can be viewed and run in the following link: [ECSE425 Group11 Final Project](https://www.edaplayground.com/x/Ad6z)
 
@@ -27,7 +27,7 @@ Our program can be viewed and run in the following link: [ECSE425 Group11 Final 
 ### Setting
 
 1. After opening the EDA Playground, firstly we need to select VHDL under Language & Libraries, and then enter our testbench name Controller_tb under Top Entity. 
-2. Secondly, under Tool&Simulator, we selected the version Aldec Rivera Pro 2020.4, and the run time set as 2000ns. We need to select “Download files after run” to view the result files.
+2. Secondly, under Tool&Simulator, we selected the version Aldec Rivera Pro 2020.4, and the run time set as 200ns(larger program may need longer run time). We need to select “Download files after run” to obtain the result files.
 
 ### Uploading
 1. We need to upload all the files in the "Pipelined Processor" directory. It includes all necessary VHDL componenets of the processor.
