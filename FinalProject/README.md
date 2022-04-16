@@ -1,7 +1,7 @@
 # ECSE 425 Final Project: MIPS Pipeliend Processor
 
 ## Author
-Chen, Byron ID: 
+Chen, Byron ID: 260892558
 Chen, Junjian ID: 260909101
 Tian, Zeying ID: 260917301
 Xu, Hongtao ID: 260773785
@@ -27,4 +27,4 @@ The assembler requires EDA Playground to run which can be found [here](https://w
 
 ### Run&Result
 1. Now we are ready to click the Run button, we can select Open EPwave to see all the waves. As we can see, all the tests work. 
-2. We can also select down files to download all the files.
+2. We can also select download files to download all the files.
