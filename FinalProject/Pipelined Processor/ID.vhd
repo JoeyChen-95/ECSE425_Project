@@ -415,7 +415,7 @@ BEGIN
                     store_enable <= '1';
                     load_enable <= '0';
 
-                ELSIF (opcode = "010100") THEN
+                ELSIF (opcode = "100011") THEN
                     -- LW
                     Rd_out <= rt;
                     ID_Op_code <= "010101";

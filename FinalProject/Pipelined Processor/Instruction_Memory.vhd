@@ -8,7 +8,7 @@ ENTITY Instruction_Memory IS
         -- We only need to store at most 1024 instructions.
         RAM_SIZE : INTEGER := 1024;
         CLOCK_PERIOD : TIME := 1 ns;
-        INSTRUCTION_FILE_ADDRESS : STRING := "code.txt";
+        INSTRUCTION_FILE_ADDRESS : STRING := "program.txt";
         BITS_IN_INSTRUCTION : INTEGER := 32
     );
     PORT (
