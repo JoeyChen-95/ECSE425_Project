@@ -2,12 +2,12 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 USE ieee.numeric_std.ALL;
 
-ENTITY PC_tb is
-end PC_tb;
+ENTITY FETCH_tb is
+end FETCH_tb;
 
-ARCHITECTURE PC_testbench OF PC_tb is
+ARCHITECTURE PC_testbench OF FETCH_tb is
 
-	COMPONENT PC is
+	COMPONENT FETCH is
     Port ( 
       	pc_clk    : in std_logic;
 		pc_reset  : in std_logic;
@@ -27,7 +27,7 @@ ARCHITECTURE PC_testbench OF PC_tb is
      
 begin 
 	
-  PC_test: PC 
+  PC_test: FETCH 
   ---------Port Map of PC ---------
   port map(
       pc_clk => clk,

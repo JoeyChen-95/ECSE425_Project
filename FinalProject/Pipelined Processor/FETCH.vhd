@@ -2,7 +2,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY PC IS
+ENTITY FETCH IS
     PORT (
         -- Signals from the controller.
         pc_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -15,7 +15,7 @@ ENTITY PC IS
     );
 END ENTITY;
 
-ARCHITECTURE arch OF PC IS
+ARCHITECTURE arch OF FETCH IS
     SIGNAL internal_pc : STD_LOGIC_VECTOR(31 DOWNTO 0);
 --     SIGNAL clock : STD_LOGIC;
 --     SIGNAL reset : STD_LOGIC;
